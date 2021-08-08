@@ -42,7 +42,7 @@ namespace AdventOfCode.Solutions._2015
         {
             var gates = Parser.ToArrayOf(input, it => new Gate(it));
             var gateDict = gates.ToDictionary(it => it.Id, it => it);
-            gateDict["b"].Value = 3176;
+            //gateDict["b"].Value = 3176;
             var unmatchedGates = gates.Where(it => it.Value == null).ToList();
 
             foreach (var item in gates)
@@ -62,30 +62,35 @@ namespace AdventOfCode.Solutions._2015
                 unmatchedGates.RemoveAll(it => toRemove.Contains(it));
             }
 
-            //var firstRun = gateDict["a"].Value.Value;
+            var firstRun = gateDict["a"].Value.Value;
 
-            //foreach(var item in gates)
-            //{
-            //    if (item.GateType != GateType.Input)
-            //        item.Value = null;
-            //}
+            foreach (var item in gates)
+            {
+                if (item.GateType != GateType.Input)
+                    item.Value = null;
+            }
 
-            //gateDict["b"].Value = firstRun;
-            //unmatchedGates = gates.Where(it => it.Value == null).ToList();
+            gates = Parser.ToArrayOf(input, it => new Gate(it));
+            gateDict = gates.ToDictionary(it => it.Id, it => it);
+            gateDict["b"].Value = firstRun;
+            unmatchedGates = gates.Where(it => it.Value == null).ToList();
 
-            //while (unmatchedGates.Any())
-            //{
-            //    var toRemove = new List<Gate>();
+            foreach (var item in gates)
+                item.ParentGates = item.ParentGates.Concat(item.ParentGateIds.Select(it => gateDict[it])).ToList();
 
-            //    foreach (var item in unmatchedGates)
-            //    {
-            //        var result = item.TryRunning();
-            //        if (result)
-            //            toRemove.Add(item);
-            //    }
+            while (unmatchedGates.Any())
+            {
+                var toRemove = new List<Gate>();
 
-            //    unmatchedGates.RemoveAll(it => toRemove.Contains(it));
-            //}
+                foreach (var item in unmatchedGates)
+                {
+                    var result = item.TryRunning();
+                    if (result)
+                        toRemove.Add(item);
+                }
+
+                unmatchedGates.RemoveAll(it => toRemove.Contains(it));
+            }
 
             return gateDict["a"].Value.Value;
         }
