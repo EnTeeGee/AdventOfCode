@@ -22,5 +22,19 @@ namespace AdventOfCode.Common
         {
             return ToArrayOf(input, it => it);
         }
+
+        public static string[] SplitOnSpace(string input)
+        {
+            return input
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .ToArray();
+        }
+
+        public static string[] SplitOn(string input, params char[] splits)
+        {
+            return input
+                .Split(splits, StringSplitOptions.RemoveEmptyEntries)
+                .ToArray();
+        }
     }
 }
