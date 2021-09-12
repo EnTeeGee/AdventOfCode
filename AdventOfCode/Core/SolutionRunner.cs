@@ -28,6 +28,12 @@ namespace AdventOfCode.Core
             }).ToArray();
         }
 
+        public void PrintStartupMessage()
+        {
+            Console.WriteLine("Leave blank for latest solution, or enter day and part numbers to target specific solution");
+            Console.WriteLine("Input will be copied from clipboard.");
+        }
+
         public bool CheckRequest(string[] args)
         {
             if (args.Length == 0)

@@ -13,6 +13,9 @@ namespace AdventOfCode
 
             var runners = new IRunner[] { solutionRunner, yearManager };
 
+            foreach (var item in runners)
+                item.PrintStartupMessage();
+
             while (true)
             {
                 var values = Console.ReadLine().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);

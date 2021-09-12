@@ -24,6 +24,11 @@ namespace AdventOfCode.Core
             solutionRunner.SetYear(currentYear);
         }
 
+        public void PrintStartupMessage()
+        {
+            Console.WriteLine($"Using solutions from year {currentYear}");
+        }
+
         public bool CheckRequest(string[] args)
         {
             if(args.Length == 1 && args[0].ToLower() == "year")
