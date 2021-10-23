@@ -24,6 +24,21 @@
             return new Point(X + distance, Y);
         }
 
+        public Point[] GetSurrounding8()
+        {
+            return new[]
+            {
+                new Point(X - 1, Y - 1),
+                new Point(X, Y - 1),
+                new Point(X + 1, Y - 1),
+                new Point(X + 1, Y),
+                new Point(X + 1, Y + 1),
+                new Point(X, Y + 1),
+                new Point(X - 1, Y + 1),
+                new Point(X - 1, Y)
+            };
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is Point))
