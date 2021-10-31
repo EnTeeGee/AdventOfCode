@@ -1,4 +1,5 @@
 ﻿using AdventOfCode.Core;
+using AdventOfCode.Renderer;
 using System;
 using System.Linq;
 
@@ -9,9 +10,10 @@ namespace AdventOfCode
         static void Main(string[] args)
         {
             var solutionRunner = new SolutionRunner();
-            var yearManager = new YearManager(solutionRunner);
+            var rendererRunner = new RendererRunner();
+            var yearManager = new YearManager(solutionRunner, rendererRunner);
 
-            var runners = new IRunner[] { solutionRunner, yearManager };
+            var runners = new IRunner[] { solutionRunner, rendererRunner, yearManager };
 
             foreach (var item in runners)
                 item.PrintStartupMessage();

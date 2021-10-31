@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdventOfCode.Renderer;
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -9,8 +10,9 @@ namespace AdventOfCode.Core
         private int[] availableYears;
         private int currentYear;
         private SolutionRunner solutionRunner;
+        private RendererRunner rendererRunner;
 
-        public YearManager(SolutionRunner solutionRunner)
+        public YearManager(SolutionRunner solutionRunner, RendererRunner rendererRunner)
         {
             availableYears = Assembly.GetExecutingAssembly()
                 .GetTypes()
@@ -21,7 +23,9 @@ namespace AdventOfCode.Core
 
             currentYear = availableYears.Max();
             this.solutionRunner = solutionRunner;
+            this.rendererRunner = rendererRunner;
             solutionRunner.SetYear(currentYear);
+            rendererRunner.SetYear(currentYear);
         }
 
         public void PrintStartupMessage()
@@ -46,6 +50,7 @@ namespace AdventOfCode.Core
                 {
                     currentYear = newYear;
                     solutionRunner.SetYear(newYear);
+                    rendererRunner.SetYear(newYear);
 
                     Console.WriteLine($"Year set to {newYear}");
                 }
