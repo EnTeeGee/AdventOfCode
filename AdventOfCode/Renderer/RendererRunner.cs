@@ -134,7 +134,7 @@ namespace AdventOfCode.Renderer
 
         private string GetFileName(RenderableMapping mapping, string extension)
         {
-            return Path.Combine(targetDir, $"{mapping.GetDescription()} {DateTime.Now.ToString("yyyyMMdd")}.{extension}");
+            return Path.Combine(targetDir, $"{mapping.GetDescription()} {DateTime.Now.ToString("yyyyMMdd-HHmmss")}.{extension}");
         }
 
         private class RenderableMapping

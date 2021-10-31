@@ -32,7 +32,7 @@ namespace AdventOfCode.Renderer._2016
                     location = location.MoveOrient(orient);
                     if (visited.Contains(location))
                     {
-                        if (firstIntersect != null)
+                        if (firstIntersect == null)
                             firstIntersect = location;
                     }
                     else
@@ -48,11 +48,27 @@ namespace AdventOfCode.Renderer._2016
 
             foreach(var item in visited)
             {
-                var drawables = new Drawables()
+                new Drawables()
                     .FillColor(MagickColors.White)
                     .Point(item.X - upperLeft.X + buffer, item.Y - upperLeft.Y + buffer)
                     .Draw(output);
             }
+
+            new Drawables()
+                .FillColor(MagickColors.Yellow)
+                .Rectangle(-upperLeft.X - 1 + buffer, -upperLeft.Y - 1 + buffer, -upperLeft.X + 1 + buffer, -upperLeft.Y + 1 + buffer)
+                .Draw(output);
+
+            new Drawables()
+                .FillColor(MagickColors.Red)
+                .Rectangle(
+                    firstIntersect.X - upperLeft.X - 1 + buffer,
+                    firstIntersect.Y - upperLeft.Y - 1 + buffer,
+                    firstIntersect.X - upperLeft.X + 1 + buffer,
+                    firstIntersect.Y - upperLeft.Y + 1 + buffer)
+                .Draw(output);
+
+            output.Scale(new Percentage(200));
 
             return output;
         }
