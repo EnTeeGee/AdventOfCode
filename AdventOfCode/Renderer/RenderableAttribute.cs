@@ -6,12 +6,17 @@ namespace AdventOfCode.Renderer
     class RenderableAttribute : Attribute
     {
         public int Day { get; }
-        public int Problem { get; }
+        public int? Version { get; }
 
-        public RenderableAttribute(int day, int problem)
+        public RenderableAttribute(int day)
         {
             Day = day;
-            Problem = problem;
+        }
+
+        public RenderableAttribute(int day, int version)
+        {
+            Day = day;
+            Version = version;
         }
     }
 }

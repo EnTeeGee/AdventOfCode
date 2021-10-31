@@ -7,7 +7,7 @@ namespace AdventOfCode.Renderer._2016
 {
     class Day01
     {
-        [Renderable(1, 1)]
+        [Renderable(1)]
         public MagickImage GenerateImage(string input)
         {
             var orders = Parser.SplitOn(input, ' ', ',');

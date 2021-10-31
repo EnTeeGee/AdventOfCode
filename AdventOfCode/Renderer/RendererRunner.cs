@@ -12,7 +12,7 @@ namespace AdventOfCode.Renderer
 
     class RendererRunner : IRunner
     {
-        private SolutionMapping[] solutions;
+        private RenderableMapping[] solutions;
 
         public void SetYear(int year)
         {
@@ -23,13 +23,15 @@ namespace AdventOfCode.Renderer
                     .Where(m => m.GetCustomAttribute<RenderableAttribute>() != null)
                     .Select(m => new { Type = it, Method = m, Info = m.GetCustomAttribute<RenderableAttribute>() }));
 
-            solutions = targets.Select(it => new SolutionMapping
+            solutions = targets.Select(it => new RenderableMapping
             {
                 Day = it.Info.Day,
-                Problem = it.Info.Problem,
+                Version = it.Info.Version,
                 ClassType = it.Type,
                 Method = it.Method,
-            }).ToArray();
+            }).OrderByDescending(it => it.Day)
+                .ThenBy(it => it.Version ?? 0)
+                .ToArray();
         }
 
         public bool CheckRequest(string[] args)
@@ -37,65 +39,90 @@ namespace AdventOfCode.Renderer
             if (args.Length == 0 || args[0].ToLower() != "draw")
                 return false;
 
-            if(args.Length == 3 && int.TryParse(args[1], out var day) && int.TryParse(args[2], out var problem))
+            if(args.Length == 1)
             {
-                var match = solutions.FirstOrDefault(it => it.Day == day && it.Problem == problem);
-
-                if(match == null)
-                {
-                    Console.WriteLine($"Unable to find solution in set year for day {day}, problem {problem}");
-
-                    return false;
-                }
-
-                var input = Clipboard.Read();
-                var instance = Activator.CreateInstance(match.ClassType);
-
-                try
-                {
-                    Console.WriteLine($"Running renderer for day {day} problem {problem}");
-                    var result = match.Method.Invoke(instance, new object[] { input });
-                    if(result is MagickImage)
-                    {
-                        var pngImage = result as MagickImage;
-                        pngImage.Write($"Day {day} Problem {problem} {DateTime.Now.ToString("yyyyMMdd")}.png");
-                    }
-                    else if (result is MagickImageCollection)
-                    {
-                        var gifImage = result as MagickImageCollection;
-                        gifImage.Write($"Day {day} Problem {problem} {DateTime.Now.ToString("yyyyMMdd")}.gif");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Instance of method for day {day} problem {problem} generated unexpected object {result.GetType()}");
-
-                        return false;
-                    }
-
-                    Console.WriteLine("Genereted and saved image");
-                    return true;
-
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Failed to run solution: " + e.Message);
-
-                    return false;
-                }
+                var match = solutions.FirstOrDefault();
+                RunInstance(match);
+            }
+            else if(args.Length == 2 && int.TryParse(args[1], out var justDay))
+            {
+                var match = solutions.Where(it => it.Day == justDay).FirstOrDefault();
+                RunInstance(match);
+            }
+            else if(args.Length == 3 && int.TryParse(args[1], out var day) && int.TryParse(args[2], out var version))
+            {
+                var match = solutions.FirstOrDefault(it => it.Day == day && it.Version == version);
+                RunInstance(match);
             } 
             else
-            {
                 Console.WriteLine("Invalid arguments for draw command");
 
-                return false;
-            }
-
-            
+            return true;
         }
 
         public void PrintStartupMessage()
         {
             // Unused for this runner
+        }
+
+        private void RunInstance(RenderableMapping mapping)
+        {
+            if (mapping == null)
+            {
+                Console.WriteLine($"Unable to find solution in for given date and version");
+
+                return;
+            }
+
+            var input = Clipboard.Read();
+            var instance = Activator.CreateInstance(mapping.ClassType);
+
+            try
+            {
+                Console.WriteLine($"Running renderer for {mapping.GetDescription()}");
+                var result = mapping.Method.Invoke(instance, new object[] { input });
+                if (result is MagickImage)
+                {
+                    var pngImage = result as MagickImage;
+                    pngImage.Write($"{mapping.GetDescription()} {DateTime.Now.ToString("yyyyMMdd")}.png");
+                }
+                else if (result is MagickImageCollection)
+                {
+                    var gifImage = result as MagickImageCollection;
+                    gifImage.Write($"{mapping.GetDescription()} {DateTime.Now.ToString("yyyyMMdd")}.gif");
+                }
+                else
+                {
+                    Console.WriteLine($"Instance of method for {mapping.GetDescription()} generated unexpected object {result.GetType()}");
+
+                    return;
+                }
+
+                Console.WriteLine("Genereted and saved image");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to run solution: " + e.Message);
+            }
+        }
+
+        private class RenderableMapping
+        {
+            public int Day { get; set; }
+
+            public int? Version { get; set; }
+
+            public Type ClassType { get; set; }
+
+            public MethodInfo Method { get; set; }
+
+            public string GetDescription()
+            {
+                if (Version == null)
+                    return $"Day {Day}";
+                else
+                    return $"Day {Day} Version {Version}";
+            }
         }
     }
 }
