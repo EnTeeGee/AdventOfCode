@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Factor.cs" />
+    <Compile Include="Common\Orientation.cs" />
     <Compile Include="Common\Point.cs" />
     <Compile Include="Common\PriorityQueue.cs" />
     <Compile Include="Core\Clipboard.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Solutions\2015\Day23.cs" />
     <Compile Include="Solutions\2015\Day24.cs" />
     <Compile Include="Solutions\2015\Day25.cs" />
+    <Compile Include="Solutions\2016\Day01.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

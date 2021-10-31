@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode.Common
+﻿using System;
+
+namespace AdventOfCode.Common
 {
     class Point
     {
@@ -24,6 +26,23 @@
             return new Point(X + distance, Y);
         }
 
+        public Point MoveOrient(Orientation orient, long distance = 1)
+        {
+            switch(orient)
+            {
+                case Orientation.North:
+                    return MoveNorth(distance);
+                case Orientation.East:
+                    return MoveEast(distance);
+                case Orientation.South:
+                    return MoveNorth(-distance);
+                case Orientation.West:
+                    return MoveEast(-distance);
+            }
+
+            return this;
+        }
+
         public Point[] GetSurrounding8()
         {
             return new[]
@@ -37,6 +56,11 @@
                 new Point(X - 1, Y + 1),
                 new Point(X - 1, Y)
             };
+        }
+
+        public long GetTaxiCabDistanceTo(Point target)
+        {
+            return Math.Abs(X - target.X) + Math.Abs(Y - target.Y);
         }
 
         public override bool Equals(object obj)
