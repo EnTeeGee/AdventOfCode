@@ -1,6 +1,7 @@
 ﻿using AdventOfCode.Core;
 using ImageMagick;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -13,6 +14,24 @@ namespace AdventOfCode.Renderer
     class RendererRunner : IRunner
     {
         private RenderableMapping[] solutions;
+        private readonly string targetDir;
+
+        public RendererRunner()
+        {
+            var currentDir = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+            while(targetDir == null)
+            {
+                var subDirs = currentDir.EnumerateDirectories();
+                var valid = subDirs.FirstOrDefault(it => it.Name.ToLower() == "images");
+                if (valid != null)
+                    targetDir = valid.FullName;
+                else if (currentDir.Parent == null)
+                    break;
+                else
+                    currentDir = currentDir.Parent;
+            }
+        }
 
         public void SetYear(int year)
         {
@@ -38,6 +57,13 @@ namespace AdventOfCode.Renderer
         {
             if (args.Length == 0 || args[0].ToLower() != "draw")
                 return false;
+
+            if(targetDir == null)
+            {
+                Console.WriteLine("No image directory located, unable to save images");
+
+                return true;
+            }
 
             if(args.Length == 1)
             {
@@ -84,12 +110,12 @@ namespace AdventOfCode.Renderer
                 if (result is MagickImage)
                 {
                     var pngImage = result as MagickImage;
-                    pngImage.Write($"{mapping.GetDescription()} {DateTime.Now.ToString("yyyyMMdd")}.png");
+                    pngImage.Write(GetFileName(mapping, "png"));
                 }
                 else if (result is MagickImageCollection)
                 {
                     var gifImage = result as MagickImageCollection;
-                    gifImage.Write($"{mapping.GetDescription()} {DateTime.Now.ToString("yyyyMMdd")}.gif");
+                    gifImage.Write(GetFileName(mapping, "gif"));
                 }
                 else
                 {
@@ -98,12 +124,17 @@ namespace AdventOfCode.Renderer
                     return;
                 }
 
-                Console.WriteLine("Genereted and saved image");
+                Console.WriteLine("Generated and saved image");
             }
             catch (Exception e)
             {
                 Console.WriteLine("Failed to run solution: " + e.Message);
             }
+        }
+
+        private string GetFileName(RenderableMapping mapping, string extension)
+        {
+            return Path.Combine(targetDir, $"{mapping.GetDescription()} {DateTime.Now.ToString("yyyyMMdd")}.{extension}");
         }
 
         private class RenderableMapping
