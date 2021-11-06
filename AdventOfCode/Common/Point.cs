@@ -4,6 +4,8 @@ namespace AdventOfCode.Common
 {
     class Point
     {
+        public static Point Origin { get { return new Point(0, 0); } }
+
         public Point() { }
 
         public Point(long x, long y)
