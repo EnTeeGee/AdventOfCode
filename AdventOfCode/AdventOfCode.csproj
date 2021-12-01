@@ -66,6 +66,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\2016\Day01.cs" />
+    <Compile Include="Renderer\2021\Day01.cs" />
     <Compile Include="Renderer\RenderableAttribute.cs" />
     <Compile Include="Renderer\RendererRunner.cs" />
     <Compile Include="Solutions\2015\Day01.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Solutions\2016\Day03.cs" />
     <Compile Include="Solutions\2016\Day04.cs" />
     <Compile Include="Solutions\2016\Day05.cs" />
+    <Compile Include="Solutions\2021\Day01.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
