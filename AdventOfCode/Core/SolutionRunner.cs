@@ -81,7 +81,7 @@ namespace AdventOfCode.Core
                     RunInstanceOfSolution(solutions.First(it => it.Name == null));
                 else
                 {
-                    var matching = solutions.First(it => it.Name.ToLower().Contains(input));
+                    var matching = solutions.First(it => it.Name?.ToLower()?.Contains(input) == true);
 
                     if (matching != null)
                         RunInstanceOfSolution(matching);
