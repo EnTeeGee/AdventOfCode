@@ -1,10 +1,7 @@
 ﻿using AdventOfCode.Common;
 using AdventOfCode.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions._2021
 {
@@ -30,21 +27,35 @@ namespace AdventOfCode.Solutions._2021
 
             for(var i = 0; i < lines[0].Length && remainingOxy.Length > 1; i++)
             {
-                //var oxyTarget = remainingOxy.Select(it => it[i]).Count(it => it == '1') > remainingOxy.Length / 2 ? '1' : '0';
-                var oxy1 = remainingOxy.Select(it => it[i]).Count(it => it == '1');
-                var oxyTarget = oxy1 > remainingOxy.Length / 2 || (oxy1 == remainingOxy.Length / 2 && remainingOxy.Length % 2 == 0) ? '1' : '0';
+                var oxyTarget = remainingOxy.Select(it => it[i]).Count(it => it == '1') < Math.Ceiling(remainingOxy.Length / 2f) ? '0' : '1';
                 remainingOxy = remainingOxy.Where(it => it[i] == oxyTarget).ToArray();
             }
 
             for(var i = 0; i < lines[0].Length && remainingCo2.Length > 1; i++)
             {
-                //var co2Target = remainingCo2.Select(it => it[i]).Count(it => it == '1') < remainingCo2.Length / 2 ? '1' : '0';
-                var co21 = remainingCo2.Select(it => it[i]).Count(it => it == '0');
-                var co2Target = co21 <= remainingCo2.Length / 2 ? '0' : '1';
+                var co2Target = remainingCo2.Select(it => it[i]).Count(it => it == '0') <= remainingCo2.Length / 2 ? '0' : '1';
                 remainingCo2 = remainingCo2.Where(it => it[i] == co2Target).ToArray();
             }
 
             return Convert.ToInt32(remainingOxy[0], 2) * Convert.ToInt32(remainingCo2[0], 2);
+        }
+
+        [Solution(3, 2, "linq")]
+        public int Solution2Linq(string input)
+        {
+            var lines = Parser.ToArrayOfString(input);
+
+            return Convert.ToInt32(
+                Enumerable
+                    .Range(0, lines[0].Length)
+                    .Aggregate(lines, (acc, i) => acc.GroupBy(it => it[i]).OrderByDescending(it => it.Count()).ThenByDescending(it => it.Key).First().ToArray())
+                    .First(), 2)
+                *
+                Convert.ToInt32(
+                    Enumerable
+                    .Range(0, lines[0].Length)
+                    .Aggregate(lines, (acc, i) => acc.GroupBy(it => it[i]).OrderBy(it => it.Count()).ThenBy(it => it.Key).First().ToArray())
+                    .First(), 2);
         }
     }
 }
