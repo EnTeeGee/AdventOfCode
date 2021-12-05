@@ -22,6 +22,8 @@ namespace AdventOfCode
             {
                 var values = Console.ReadLine().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 var result = runners.FirstOrDefault(it => it.CheckRequest(values));
+                if (result == null)
+                    Console.WriteLine("unexpected command");
             }
         }
     }
