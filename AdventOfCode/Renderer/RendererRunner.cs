@@ -119,7 +119,7 @@ namespace AdventOfCode.Renderer
                 }
                 else
                 {
-                    Console.WriteLine($"Instance of method for {mapping.GetDescription()} generated unexpected object {result.GetType()}");
+                    Console.WriteLine($"Instance of method for {mapping.GetDescription()} generated unexpected object {result?.GetType().ToString() ?? "null"}");
 
                     return;
                 }
