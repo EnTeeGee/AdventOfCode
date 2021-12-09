@@ -45,6 +45,17 @@ namespace AdventOfCode.Common
             return this;
         }
 
+        public Point[] GetSurrounding4()
+        {
+            return new[]
+            {
+                new Point(X, Y - 1),
+                new Point(X + 1, Y),
+                new Point(X, Y + 1),
+                new Point(X - 1, Y)
+            };
+        }
+
         public Point[] GetSurrounding8()
         {
             return new[]
