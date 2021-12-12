@@ -9,6 +9,12 @@ namespace AdventOfCode.Core
     {
         private SolutionMapping[] solutions;
 
+        public SolutionRunner(YearManager yearManager)
+        {
+            yearManager.Subscribe(SetYear);
+            SetYear(yearManager.CurrentYear);
+        }
+
         public void SetYear(int year)
         {
             var targets = Assembly.GetExecutingAssembly()

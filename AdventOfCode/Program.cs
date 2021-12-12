@@ -9,9 +9,9 @@ namespace AdventOfCode
     {
         static void Main(string[] args)
         {
-            var solutionRunner = new SolutionRunner();
-            var rendererRunner = new RendererRunner();
-            var yearManager = new YearManager(solutionRunner, rendererRunner);
+            var yearManager = new YearManager();
+            var solutionRunner = new SolutionRunner(yearManager);
+            var rendererRunner = new RendererRunner(yearManager);
 
             var runners = new IRunner[] { solutionRunner, rendererRunner, yearManager };
 

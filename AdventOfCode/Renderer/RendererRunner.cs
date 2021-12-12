@@ -16,7 +16,7 @@ namespace AdventOfCode.Renderer
         private RenderableMapping[] solutions;
         private readonly string targetDir;
 
-        public RendererRunner()
+        public RendererRunner(YearManager yearManager)
         {
             var currentDir = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
@@ -31,6 +31,9 @@ namespace AdventOfCode.Renderer
                 else
                     currentDir = currentDir.Parent;
             }
+
+            yearManager.Subscribe(SetYear);
+            SetYear(yearManager.CurrentYear);
         }
 
         public void SetYear(int year)

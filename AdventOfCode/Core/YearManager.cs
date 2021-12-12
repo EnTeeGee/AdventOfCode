@@ -1,5 +1,5 @@
-﻿using AdventOfCode.Renderer;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -8,11 +8,11 @@ namespace AdventOfCode.Core
     class YearManager : IRunner
     {
         private int[] availableYears;
-        private int currentYear;
-        private SolutionRunner solutionRunner;
-        private RendererRunner rendererRunner;
+        private List<Action<int>> actions;
 
-        public YearManager(SolutionRunner solutionRunner, RendererRunner rendererRunner)
+        public int CurrentYear { get; private set; }
+
+        public YearManager()
         {
             availableYears = Assembly.GetExecutingAssembly()
                 .GetTypes()
@@ -21,23 +21,21 @@ namespace AdventOfCode.Core
                 .Distinct()
                 .ToArray();
 
-            currentYear = availableYears.Max();
-            this.solutionRunner = solutionRunner;
-            this.rendererRunner = rendererRunner;
-            solutionRunner.SetYear(currentYear);
-            rendererRunner.SetYear(currentYear);
+            CurrentYear = availableYears.Max();
+
+            actions = new List<Action<int>>();
         }
 
         public void PrintStartupMessage()
         {
-            Console.WriteLine($"Using solutions from year {currentYear}");
+            Console.WriteLine($"Using solutions from year {CurrentYear}");
         }
 
         public bool CheckRequest(string[] args)
         {
             if(args.Length == 1 && args[0].ToLower() == "year")
             {
-                Console.WriteLine($"Current year is {currentYear}.");
+                Console.WriteLine($"Current year is {CurrentYear}.");
 
                 return true;
             }
@@ -48,9 +46,9 @@ namespace AdventOfCode.Core
                     Console.WriteLine($"No solutions found for year {newYear}");
                 else
                 {
-                    currentYear = newYear;
-                    solutionRunner.SetYear(newYear);
-                    rendererRunner.SetYear(newYear);
+                    CurrentYear = newYear;
+                    foreach (var item in actions)
+                        item.Invoke(CurrentYear);
 
                     Console.WriteLine($"Year set to {newYear}");
                 }
@@ -58,6 +56,11 @@ namespace AdventOfCode.Core
             }
 
             return false;
+        }
+
+        public void Subscribe(Action<int> action)
+        {
+            actions.Add(action);
         }
     }
 }

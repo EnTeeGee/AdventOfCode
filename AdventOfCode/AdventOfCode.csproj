@@ -62,6 +62,7 @@
     <Compile Include="Common\Parser.cs" />
     <Compile Include="Core\SolutionAttribute.cs" />
     <Compile Include="Core\SolutionRunner.cs" />
+    <Compile Include="Core\TimingRunner.cs" />
     <Compile Include="Core\YearManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
