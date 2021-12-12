@@ -15,7 +15,7 @@ namespace AdventOfCode.Renderer._2016
             var location = new Point();
             var visited = new HashSet<Point>();
             visited.Add(location);
-            Point firstIntersect = null;
+            Point? firstIntersect = null;
 
             foreach (var item in orders)
             {
@@ -62,10 +62,10 @@ namespace AdventOfCode.Renderer._2016
             new Drawables()
                 .FillColor(MagickColors.Red)
                 .Rectangle(
-                    firstIntersect.X - upperLeft.X - 1 + buffer,
-                    firstIntersect.Y - upperLeft.Y - 1 + buffer,
-                    firstIntersect.X - upperLeft.X + 1 + buffer,
-                    firstIntersect.Y - upperLeft.Y + 1 + buffer)
+                    firstIntersect.Value.X - upperLeft.X - 1 + buffer,
+                    firstIntersect.Value.Y - upperLeft.Y - 1 + buffer,
+                    firstIntersect.Value.X - upperLeft.X + 1 + buffer,
+                    firstIntersect.Value.Y - upperLeft.Y + 1 + buffer)
                 .Draw(output);
 
             output.Scale(new Percentage(200));

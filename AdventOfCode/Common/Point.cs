@@ -2,11 +2,9 @@
 
 namespace AdventOfCode.Common
 {
-    class Point
+    struct Point
     {
         public static Point Origin { get { return new Point(0, 0); } }
-
-        public Point() { }
 
         public Point(long x, long y)
         {
@@ -81,7 +79,7 @@ namespace AdventOfCode.Common
             if (!(obj is Point))
                 return false;
 
-            var cast = obj as Point;
+            var cast = (Point)obj;
 
             return cast.X == X && cast.Y == Y;
         }

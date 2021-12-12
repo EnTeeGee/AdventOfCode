@@ -48,8 +48,12 @@ namespace AdventOfCode.Solutions._2021
 
         private int IterateGrid(Dictionary<Point, int> points)
         {
+            var pointArray = points.Keys.ToArray();
+            foreach (var item in pointArray)
+                points[item]++;
+
             var flashing = new Queue<Point>();
-            var flashed = points.Where(it => it.Value == 9).Select(it => it.Key).ToHashSet();
+            var flashed = points.Where(it => it.Value > 9).Select(it => it.Key).ToHashSet();
             foreach (var item in flashed)
                 flashing.Enqueue(item);
 
