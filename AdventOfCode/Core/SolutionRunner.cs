@@ -42,81 +42,120 @@ namespace AdventOfCode.Core
 
         public bool CheckRequest(string[] args)
         {
-            if (args.Length == 0)
-            {
-                if (solutions.Length == 0)
-                {
-                    RunSolutions(new SolutionMapping[0]);
+            var matching = GetMatchingSolution(args);
 
-                    return true;
-                }
-                    
-                var latest = solutions.OrderByDescending(it => it.Day).ThenByDescending(it => it.Problem).First();
-
-                RunSolutions(solutions.Where(it => it.Day == latest.Day && it.Problem == latest.Problem).ToArray());
-            }
-            else if (args.Length == 2 && int.TryParse(args[0], out var day) && int.TryParse(args[1], out var problem))
-            {
-                RunSolutions(solutions.Where(it => it.Day == day && it.Problem == problem).ToArray());
-            }
-            else
+            if (matching == null)
                 return false;
+
+            RunInstanceOfSolution(matching);
 
             return true;
         }
 
-        private void RunSolutions(SolutionMapping[] solutions)
+        public double RunTimingTest(string[] args)
         {
-            if(solutions.Length == 0)
+            var matching = GetMatchingSolution(args);
+
+            if (matching == null)
+                throw new Exception("Failed to find solution to test");
+
+            var runs = 10;
+            var total = 0D;
+            var input = Clipboard.Read();
+            // Warm up
+            RunIsolatedInstance(input, matching);
+
+            for(var i = 0; i < runs; i++)
+                total += RunIsolatedInstance(input, matching).Duration;
+
+            return total / runs;
+
+        }
+
+        private SolutionMapping GetMatchingSolution(string[] args)
+        {
+            var matchingList = new SolutionMapping[0];
+
+            if (args.Length == 0)
+            {
+                if (solutions.Length == 0)
+                {
+                    Console.WriteLine("Unable to find any solutions for specified problem");
+
+                    return null;
+                }
+
+                var latest = solutions.OrderByDescending(it => it.Day).ThenByDescending(it => it.Problem).First();
+
+                matchingList = solutions.Where(it => it.Day == latest.Day && it.Problem == latest.Problem).ToArray();
+            }
+            else if (args.Length == 2 && int.TryParse(args[0], out var day) && int.TryParse(args[1], out var problem))
+            {
+                matchingList = solutions.Where(it => it.Day == day && it.Problem == problem).ToArray();
+            }
+            else
+                return null;
+
+            if(matchingList.Length == 0)
             {
                 Console.WriteLine("Unable to find any solutions for specified problem");
 
-                return;
+                return null;
             }
-            else if (solutions.Length == 1)
-            {
-                RunInstanceOfSolution(solutions[0]);
-            }
-            else
+
+            if(matchingList.Length > 1)
             {
                 Console.WriteLine("Enter which version you want to run (blank works for default)");
                 Console.WriteLine($"({string.Join("/", solutions.Select(it => it.Name ?? "default"))})");
                 var input = Console.ReadLine().ToLower();
 
                 if ((string.IsNullOrEmpty(input) || input == "default") && solutions.Any(it => it.Name == null))
-                    RunInstanceOfSolution(solutions.First(it => it.Name == null));
+                    return solutions.First(it => it.Name == null);
                 else
                 {
                     var matching = solutions.First(it => it.Name?.ToLower()?.Contains(input) == true);
 
                     if (matching != null)
-                        RunInstanceOfSolution(matching);
+                        return matching;
                     else
+                    {
                         Console.WriteLine("Unable to find matching solution");
+
+                        return null;
+                    }
                 }
             }
+
+            return matchingList[0];
         }
 
         private void RunInstanceOfSolution(SolutionMapping solutionMapping)
         {
             var input = Clipboard.Read();
-            var instance = Activator.CreateInstance(solutionMapping.ClassType);
 
             try
             {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var result = solutionMapping.Method.Invoke(instance, new object[] { input });
-                stopwatch.Stop();
+                var output = RunIsolatedInstance(input, solutionMapping);
                 Console.WriteLine($"Solution for day {solutionMapping.Day}, problem {solutionMapping.Problem}:");
-                Console.WriteLine(result);
-                Console.WriteLine($"Elapsed time: {stopwatch.Elapsed.TotalSeconds} seconds");
-                Clipboard.Write(result?.ToString() ?? string.Empty);
+                Console.WriteLine(output.Result);
+                Console.WriteLine($"Elapsed time: {output.Duration} seconds");
+                Clipboard.Write(output.Result?.ToString() ?? string.Empty);
             }
             catch (Exception e)
             {
                 Console.WriteLine("Failed to Generate answer: " + e.Message);
             }
+        }
+
+        private (string Result, double Duration) RunIsolatedInstance(string input, SolutionMapping solutionMapping)
+        {
+            var instance = Activator.CreateInstance(solutionMapping.ClassType);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var result = solutionMapping.Method.Invoke(instance, new object[] { input });
+            stopwatch.Stop();
+
+            return (result.ToString(), stopwatch.Elapsed.TotalSeconds);
         }
 
         private class SolutionMapping
