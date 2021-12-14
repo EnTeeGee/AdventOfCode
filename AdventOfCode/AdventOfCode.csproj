@@ -114,6 +114,8 @@
     <Compile Include="Solutions\2021\Day10.cs" />
     <Compile Include="Solutions\2021\Day11.cs" />
     <Compile Include="Solutions\2021\Day12.cs" />
+    <Compile Include="Solutions\2021\Day13.cs" />
+    <Compile Include="Solutions\2021\Day14.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
