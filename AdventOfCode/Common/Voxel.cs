@@ -12,6 +12,8 @@ namespace AdventOfCode.Common
         public int Y { get; }
         public int Z { get; }
 
+        public static Voxel Origin { get { return new Voxel(0, 0, 0); } }
+
         public Voxel(int x, int y, int z)
         {
             X = x;
@@ -63,6 +65,11 @@ namespace AdventOfCode.Common
                 it.RotateAroundY().RotateAroundY(),
                 it.RotateAroundY().RotateAroundY().RotateAroundY()
             }).ToArray();
+        }
+
+        public int GetTaxicabDistanceTo(Voxel target)
+        {
+            return Math.Abs(X - target.X) + Math.Abs(Y - target.Y) + Math.Abs(Z - target.Z);
         }
 
         public override bool Equals(object obj)
