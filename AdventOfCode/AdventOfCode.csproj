@@ -57,6 +57,7 @@
     <Compile Include="Common\Orientation.cs" />
     <Compile Include="Common\Point.cs" />
     <Compile Include="Common\PriorityQueue.cs" />
+    <Compile Include="Common\Voxel.cs" />
     <Compile Include="Core\Clipboard.cs" />
     <Compile Include="Core\IRunner.cs" />
     <Compile Include="Common\Parser.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Solutions\2021\Day16.cs" />
     <Compile Include="Solutions\2021\Day17.cs" />
     <Compile Include="Solutions\2021\Day18.cs" />
+    <Compile Include="Solutions\2021\Day19.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
