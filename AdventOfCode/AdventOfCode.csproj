@@ -122,6 +122,9 @@
     <Compile Include="Solutions\2021\Day17.cs" />
     <Compile Include="Solutions\2021\Day18.cs" />
     <Compile Include="Solutions\2021\Day19.cs" />
+    <Compile Include="Solutions\2021\Day20.cs" />
+    <Compile Include="Solutions\2021\Day21.cs" />
+    <Compile Include="Solutions\2021\Day22.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
