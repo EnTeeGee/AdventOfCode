@@ -3,48 +3,67 @@ using AdventOfCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions._2021
 {
     class Day22
     {
         [Solution(22, 1)]
-        public int Solution1(string input)
+        public long Solution1(string input)
+        {
+            return Run(input, true);
+        }
+
+        [Solution(22, 2)]
+        public long Solution2(string input)
+        {
+            return Run(input, false);
+        }
+
+        private long Run(string input, bool ignoreOuter)
         {
             var info = Parser.ToArrayOfString(input).Select(it => Parser.SplitOn(it, ' ', '=', ',', '.')).ToArray();
             var points = new HashSet<Voxel>();
             var target = new Cuboid(50, -50, 50, -50, 50, -50);
-            foreach(var line in info)
+            var covered = new List<Cuboid>();
+            foreach (var line in info)
             {
                 var values = new[] { line[2], line[3], line[5], line[6], line[8], line[9] }.Select(it => int.Parse(it)).ToArray();
                 var top = new Voxel(values[0], values[2], values[4]);
                 var bottom = new Voxel(values[1], values[3], values[5]);
 
-                if (!target.Intersects(top) || !target.Intersects(bottom))
+                if (ignoreOuter && (!target.Intersects(top) || !target.Intersects(bottom)))
                     continue;
 
-                for(var i = top.X; i <= bottom.X; i++)
+                var section = new Cuboid(values[0], values[1], values[2], values[3], values[4], values[5]);
+                if (line[0] == "on")
                 {
-                    for(var j = top.Y; j <= bottom.Y; j++)
+                    foreach (var item in covered)
                     {
-                        for(var k = top.Z; k <= bottom.Z; k++)
-                        {
-                            var point = new Voxel(i, j, k);
-                            if (points.Contains(point))
-                                points.Remove(point);
-                            else
-                                points.Add(point);
-                        }
+                        item.AddSameSection(section);
+                        section.AddIgnoredSection(item);
                     }
+
+                    if (section.GetVolume() <= 0)
+                        continue;
+
+                    covered.Add(section);
                 }
+                else
+                {
+                    var toRemove = new List<Cuboid>();
+                    foreach (var item in covered)
+                        if (item.AddToggledSection(section))
+                            toRemove.Add(item);
+
+                    covered.RemoveAll(it => toRemove.Contains(it));
+                }
+
+                //Console.WriteLine("Current vol: " + covered.Sum(it => it.GetVolume()));
             }
 
-            return points.Count();
+            return covered.Sum(it => it.GetVolume());
         }
-
-        // https://stackoverflow.com/questions/5556170/finding-shared-volume-of-two-overlapping-cuboids
 
         private class Cuboid
         {
@@ -55,6 +74,9 @@ namespace AdventOfCode.Solutions._2021
             public int MaxZ { get; }
             public int MinZ { get; }
 
+            private List<Cuboid> ignored;
+            private List<Cuboid> toggledSections;
+
             public Cuboid(int x1, int x2, int y1, int y2, int z1, int z2)
             {
                 MaxX = Math.Max(x1, x2);
@@ -63,6 +85,9 @@ namespace AdventOfCode.Solutions._2021
                 MinY = Math.Min(y1, y2);
                 MaxZ = Math.Max(z1, z2);
                 MinZ = Math.Min(z1, z2);
+
+                ignored = new List<Cuboid>();
+                toggledSections = new List<Cuboid>();
             }
 
             public bool Intersects(Voxel point)
@@ -75,21 +100,102 @@ namespace AdventOfCode.Solutions._2021
             public Cuboid GetOverlap(Cuboid target)
             {
                 var xStart = Math.Max(MinX, target.MinX);
-                var xEnd = Math.Min(MaxX, target.MinX);
+                var xEnd = Math.Min(MaxX, target.MaxX);
                 if (xStart > xEnd)
                     return null;
 
                 var yStart = Math.Max(MinY, target.MinY);
-                var yEnd = Math.Min(MaxY, target.MinY);
+                var yEnd = Math.Min(MaxY, target.MaxY);
                 if (yStart > yEnd)
                     return null;
 
                 var zStart = Math.Max(MinZ, target.MinZ);
-                var zEnd = Math.Min(MaxZ, target.MinZ);
+                var zEnd = Math.Min(MaxZ, target.MaxZ);
                 if (zStart > zEnd)
                     return null;
 
                 return new Cuboid(xStart, xEnd, yStart, yEnd, zStart, zEnd);
+            }
+
+            public long GetVolume()
+            {
+                var toggledVolume = toggledSections.Sum(it => it.GetVolume());
+
+                return GetBaseVolume() - GetIgnoredVolume() - toggledVolume;
+            }
+
+            public bool AddIgnoredSection(Cuboid section)
+            {
+                var overlap = GetOverlap(section);
+                if (overlap == null)
+                    return false;
+
+                foreach(var item in ignored)
+                {
+                    if (overlap.AddIgnoredSection(item))
+                        return false; // overlap covered by other overlaps
+                }
+
+                ignored.Add(overlap);
+                if (GetBaseVolume() - GetIgnoredVolume() <= 0)
+                    return true; // fully ignored
+
+                var toRemove = new List<Cuboid>();
+                foreach (var item in toggledSections)
+                {
+                    if (item.AddIgnoredSection(overlap))
+                        toRemove.Add(item);
+                }
+
+                toggledSections.RemoveAll(it => toRemove.Contains(it));
+
+                return false;
+            }
+
+            // returns true if it's been completey overwritten and no longer needs to be tracked
+            public bool AddToggledSection(Cuboid section)
+            {
+                var subSection = GetOverlap(section);
+                if (subSection == null)
+                    return false;
+
+                foreach (var item in ignored)
+                {
+                    if (subSection.AddIgnoredSection(item))
+                        return false;
+                }
+
+                foreach (var item in toggledSections)
+                    item.AddSameSection(subSection);
+
+                foreach (var item in toggledSections)
+                    if (subSection.AddIgnoredSection(item))
+                        return false;
+
+                toggledSections.Add(subSection);
+
+                return GetVolume() <= 0;
+            }
+
+            public void AddSameSection(Cuboid section)
+            {
+                var toRemove = new List<Cuboid>();
+                foreach (var item in toggledSections)
+                {
+                    if (item.AddToggledSection(section))
+                        toRemove.Add(item);
+                }
+                toggledSections.RemoveAll(it => toRemove.Contains(it)); 
+            }
+
+            private long GetIgnoredVolume()
+            {
+                return ignored.Sum(it => it.GetVolume());
+            }
+
+            private long GetBaseVolume()
+            {
+                return (long)(MaxX - MinX + 1) * (MaxY - MinY + 1) * (MaxZ - MinZ + 1);
             }
         }
     }
