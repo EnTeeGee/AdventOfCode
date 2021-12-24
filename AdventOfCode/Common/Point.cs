@@ -88,5 +88,10 @@ namespace AdventOfCode.Common
         {
             return (int)(X ^ Y);
         }
+
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
+        }
     }
 }
