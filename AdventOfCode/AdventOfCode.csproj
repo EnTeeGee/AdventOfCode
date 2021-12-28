@@ -70,6 +70,7 @@
     <Compile Include="Renderer\2016\Day01.cs" />
     <Compile Include="Renderer\2021\Day01.cs" />
     <Compile Include="Renderer\2021\Day05.cs" />
+    <Compile Include="Renderer\2021\Day25.cs" />
     <Compile Include="Renderer\RenderableAttribute.cs" />
     <Compile Include="Renderer\RendererRunner.cs" />
     <Compile Include="Solutions\2015\Day01.cs" />
