@@ -106,6 +106,8 @@
     <Compile Include="Solutions\2016\Day06.cs" />
     <Compile Include="Solutions\2016\Day07.cs" />
     <Compile Include="Solutions\2016\Day08.cs" />
+    <Compile Include="Solutions\2016\Day09.cs" />
+    <Compile Include="Solutions\2016\Day10.cs" />
     <Compile Include="Solutions\2021\Day01.cs" />
     <Compile Include="Solutions\2021\Day02.cs" />
     <Compile Include="Solutions\2021\Day03.cs" />
