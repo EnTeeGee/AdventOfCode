@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Common\Factor.cs" />
     <Compile Include="Common\Orientation.cs" />
+    <Compile Include="Common\Permutations.cs" />
     <Compile Include="Common\Point.cs" />
     <Compile Include="Common\PriorityQueue.cs" />
     <Compile Include="Common\Voxel.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Solutions\2016\Day08.cs" />
     <Compile Include="Solutions\2016\Day09.cs" />
     <Compile Include="Solutions\2016\Day10.cs" />
+    <Compile Include="Solutions\2016\Day11.cs" />
     <Compile Include="Solutions\2021\Day01.cs" />
     <Compile Include="Solutions\2021\Day02.cs" />
     <Compile Include="Solutions\2021\Day03.cs" />
