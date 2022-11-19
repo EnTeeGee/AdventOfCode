@@ -1,10 +1,7 @@
 ﻿using AdventOfCode.Common;
 using AdventOfCode.Core;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions._2016
 {
