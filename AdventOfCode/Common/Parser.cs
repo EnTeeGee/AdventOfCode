@@ -44,5 +44,12 @@ namespace AdventOfCode.Common
                 .Split(splits, StringSplitOptions.RemoveEmptyEntries)
                 .ToArray();
         }
+
+        public static string[] SplitOn(string input, params string[] splits)
+        {
+            return input
+                .Split(splits, StringSplitOptions.RemoveEmptyEntries)
+                .ToArray();
+        }
     }
 }
