@@ -18,10 +18,11 @@ namespace AdventOfCode.Solutions._2016
             var dict = Enumerable.Range(1, 3).ToDictionary(it => it, it => Parser.SplitOn(lines[it - 1], ",", " and").Select(l => new Component(l)).ToArray());
             dict.Add(4, new Component[0]);
 
-            return Run(dict);
+            //return Run(dict);
+            return Run2(dict);
         }
 
-        [Solution(11, 2)]
+        //[Solution(11, 2)]
         public int Solution2(string input)
         {
             var lines = Parser.ToArrayOfString(input);
@@ -31,7 +32,8 @@ namespace AdventOfCode.Solutions._2016
             var updatedFloor = dict[1].Concat(additionalItems).ToArray();
             dict[1] = updatedFloor;
 
-            return Run(dict);
+            //return Run(dict);
+            return Run2(dict);
         }
 
         private int Run(Dictionary<int, Component[]> input)
@@ -47,11 +49,11 @@ namespace AdventOfCode.Solutions._2016
                 var current = queue.Dequeue();
                 if (current.IsFinished())
                 {
-                    //foreach (var item in current.PriorStates.Concat(new[] { current }))
-                    //{
-                    //    Console.WriteLine(item.Draw());
-                    //    Console.WriteLine();
-                    //}
+                    foreach (var item in current.PriorStates.Concat(new[] { current }))
+                    {
+                        Console.WriteLine(item.Draw());
+                        Console.WriteLine();
+                    }
 
                     return current.Steps;
                 }
@@ -62,7 +64,46 @@ namespace AdventOfCode.Solutions._2016
                 {
                     queue.Enqueue(item);
                     seen.Add(item);
-                    //item.PriorStates.AddRange(current.PriorStates.Concat(new[] { current }));
+                    item.PriorStates.AddRange(current.PriorStates.Concat(new[] { current }));
+                }
+            }
+
+            throw new Exception("Found no paths");
+        }
+
+        private int Run2(Dictionary<int, Component[]> input)
+        {
+            var start = new State(0, input, 1);
+            var queue = new PriorityQueue<State>((a, b) => a.DistanceToEnd - b.DistanceToEnd);
+            queue.Insert(start);
+            var seen = new Dictionary<State, int>();
+
+            while(queue.Any())
+            {
+                var current = queue.Pop();
+                //if (current.IsFinished())
+                //    return current.Steps;
+                if (current.IsFinished())
+                {
+                    foreach (var item in current.PriorStates.Concat(new[] { current }))
+                    {
+                        Console.WriteLine(item.Draw());
+                        Console.WriteLine();
+                    }
+
+                    return current.Steps;
+                }
+
+
+                var options = current.GetMoves().Where(it => !seen.ContainsKey(it) || seen[it] > it.Steps).ToArray();
+                foreach (var item in options)
+                {
+                    queue.Insert(item);
+                    if (!seen.ContainsKey(item))
+                        seen.Add(item, item.Steps);
+                    else
+                        seen[item] = item.Steps;
+                    item.PriorStates.AddRange(current.PriorStates.Concat(new[] { current }));
                 }
             }
 
@@ -98,9 +139,10 @@ namespace AdventOfCode.Solutions._2016
             public Dictionary<int, Component[]> OnFloors { get; }
             public int LiftFloor { get; }
 
-            //public List<State> PriorStates { get; }
+            public List<State> PriorStates { get; }
 
             public string Uid { get; }
+            public int DistanceToEnd { get; }
 
             public State(int steps, Dictionary<int, Component[]> onFloors, int liftFloor)
             {
@@ -109,7 +151,8 @@ namespace AdventOfCode.Solutions._2016
                 LiftFloor = liftFloor;
 
                 Uid = $"F:{LiftFloor}|I:{DictToString()}";
-                //PriorStates = new List<State>();
+                DistanceToEnd = OnFloors.Select(it => (4 - it.Key) * it.Value.Length).Sum();
+                PriorStates = new List<State>();
             }
 
             public State[] GetMoves()
