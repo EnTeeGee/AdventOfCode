@@ -8,7 +8,7 @@ namespace AdventOfCode.Common
         public static T[] ToArrayOf<T>(string input, Func<string, T> converter)
         {
             return input
-                .Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(it => converter.Invoke(it.Trim()))
                 .ToArray();
         }
@@ -26,7 +26,7 @@ namespace AdventOfCode.Common
         public static string[] ToArrayOfGroups(string input)
         {
             return input
-                .Split(new[] { Environment.NewLine + Environment.NewLine, "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(it => it.Trim())
                 .ToArray();
         }
