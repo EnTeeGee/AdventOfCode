@@ -14,8 +14,7 @@ namespace AdventOfCode.Solutions._2022
         public int Solution1(string input)
         {
             return Parser.ToArrayOfString(input)
-                .Select(it => Parser.SplitOnSpace(it))
-                .Select(it => new { elf = it[0][0], you = it[1][0] })
+                .Select(it => new { elf = it[0], you = it[2] })
                 .Sum(it => (wins[it.elf] == it.you ? 6 : losses[it.elf] == it.you ? 0 : 3) + it.you - 'W');
         }
 
@@ -23,8 +22,7 @@ namespace AdventOfCode.Solutions._2022
         public int Solution2(string input)
         {
             return Parser.ToArrayOfString(input)
-                .Select(it => Parser.SplitOnSpace(it))
-                .Select(it => new { elf = it[0][0], you = it[1][0] })
+                .Select(it => new { elf = it[0], you = it[2] })
                 .Sum(it => (it.you == 'Z' ? wins[it.elf] : it.you == 'X' ? losses[it.elf] : (it.elf + 23)) - 'W' + ((it.you - 'X') * 3));
         }
     }
