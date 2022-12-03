@@ -137,6 +137,7 @@
     <Compile Include="Solutions\2021\Day25.cs" />
     <Compile Include="Solutions\2022\Day01.cs" />
     <Compile Include="Solutions\2022\Day02.cs" />
+    <Compile Include="Solutions\2022\Day03.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
