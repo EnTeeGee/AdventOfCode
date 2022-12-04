@@ -19,7 +19,8 @@ namespace AdventOfCode.Solutions._2022
         {
             return Parser.ToArrayOfString(input)
                 .Select(it => Parser.SplitOn(it, '-', ',').Select(l => int.Parse(l)).ToArray())
-                .Count(it => ((it[0] <= it[2]) && (it[1] >= it[2])) || ((it[0] <= it[3]) && (it[1] >= it[3])) || ((it[0] >= it[2]) && (it[1] <= it[3])));
+                .Count(it => !((it[1] < it[2]) || (it[0] > it[3])));
+                //.Count(it => ((it[0] <= it[2]) && (it[1] >= it[2])) || ((it[0] <= it[3]) && (it[1] >= it[3])) || ((it[0] >= it[2]) && (it[1] <= it[3])));
         }
     }
 }
