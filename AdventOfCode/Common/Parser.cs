@@ -23,11 +23,25 @@ namespace AdventOfCode.Common
             return ToArrayOf(input, it => it);
         }
 
+        public static string[] ToArrayOfStringUntrimmed(string input)
+        {
+            return input
+                .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .ToArray();
+        }
+
         public static string[] ToArrayOfGroups(string input)
         {
             return input
                 .Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(it => it.Trim())
+                .ToArray();
+        }
+
+        public static string[] ToArrayOfGroupsUntrimmed(string input)
+        {
+            return input
+                .Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .ToArray();
         }
 

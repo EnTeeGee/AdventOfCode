@@ -1,6 +1,5 @@
 ﻿using AdventOfCode.Common;
 using AdventOfCode.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,10 +43,10 @@ namespace AdventOfCode.Solutions._2022
 
         private (Stack<char>[] columns, int[][]moves) Parse(string input)
         {
-            var chunks = input.Split(new[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            var columnLines = chunks[0].Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            var chunks = Parser.ToArrayOfGroupsUntrimmed(input);
+            var columnLines = Parser.ToArrayOfStringUntrimmed(chunks[0]);
 
-            var columns = Enumerable.Range(1, columnLines.Max(it => it.Length))
+            var columns = Enumerable.Range(1, columnLines[0].Length)
                 .Where(it => (it - 1) % 4 == 0)
                 .Select(it => columnLines.Take(columnLines.Length - 1).Select(c => c[it]).Where(c => c != ' ').ToArray())
                 .Select(it => new Stack<char>(it.Reverse()))
