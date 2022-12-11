@@ -45,6 +45,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -145,6 +146,7 @@
     <Compile Include="Solutions\2022\Day08.cs" />
     <Compile Include="Solutions\2022\Day09.cs" />
     <Compile Include="Solutions\2022\Day10.cs" />
+    <Compile Include="Solutions\2022\Day11.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
