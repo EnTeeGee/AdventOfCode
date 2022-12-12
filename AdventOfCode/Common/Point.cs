@@ -74,6 +74,11 @@ namespace AdventOfCode.Common
             return Math.Abs(X - target.X) + Math.Abs(Y - target.Y);
         }
 
+        public bool WithinBounds(long xMin, long xMax, long yMin, long yMax)
+        {
+            return X >= xMin && X <= xMax && Y >= yMin && Y <= yMax;
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is Point))

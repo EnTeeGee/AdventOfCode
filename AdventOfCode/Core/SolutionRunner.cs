@@ -143,7 +143,7 @@ namespace AdventOfCode.Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("Failed to Generate answer: " + e.Message);
+                Console.WriteLine("Failed to Generate answer: " + e.InnerException?.Message ?? e.Message);
             }
         }
 
