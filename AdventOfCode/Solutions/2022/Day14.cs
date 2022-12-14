@@ -3,8 +3,6 @@ using AdventOfCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions._2022
 {
@@ -13,33 +11,7 @@ namespace AdventOfCode.Solutions._2022
         [Solution(14, 1)]
         public int Solution1(string input)
         {
-            var wallPoints = Parser.ToArrayOfString(input)
-                .Select(it => Parser.SplitOn(it, ' ', '-', '>')
-                    .Select(p => Parser.SplitOn(p, ','))
-                    .Select(p => new Point(int.Parse(p[0]), int.Parse(p[1])))
-                    .ToArray())
-                .SelectMany(it => it.Zip(it.Skip(1), (first, second) => new { first, second }))
-                .ToArray();
-
-            var walls = new HashSet<Point>();
-            var bottom = 0L;
-            foreach(var item in wallPoints)
-            {
-                Point[] toAdd = null;
-                if (item.first.X != item.second.X)
-                    toAdd = Enumerable.Range((int)Math.Min(item.first.X, item.second.X), (int)Math.Abs(item.first.X - item.second.X) + 1)
-                        .Select(it => new Point(it, item.first.Y))
-                        .ToArray();
-                else
-                    toAdd = Enumerable.Range((int)Math.Min(item.first.Y, item.second.Y), (int)Math.Abs(item.first.Y - item.second.Y) + 1)
-                        .Select(it => new Point(item.first.X, it))
-                        .ToArray();
-
-                foreach (var point in toAdd)
-                    walls.Add(point);
-
-                bottom = Math.Max(Math.Max(item.first.Y, item.second.Y), bottom);
-            }
+            var (walls, bottom) = Parse(input);
 
             var fallenSand = new HashSet<Point>();
 
@@ -74,33 +46,7 @@ namespace AdventOfCode.Solutions._2022
         [Solution(14, 2)]
         public int Solution2(string input)
         {
-            var wallPoints = Parser.ToArrayOfString(input)
-                .Select(it => Parser.SplitOn(it, ' ', '-', '>')
-                    .Select(p => Parser.SplitOn(p, ','))
-                    .Select(p => new Point(int.Parse(p[0]), int.Parse(p[1])))
-                    .ToArray())
-                .SelectMany(it => it.Zip(it.Skip(1), (first, second) => new { first, second }))
-                .ToArray();
-
-            var walls = new HashSet<Point>();
-            var bottom = 0L;
-            foreach (var item in wallPoints)
-            {
-                Point[] toAdd = null;
-                if (item.first.X != item.second.X)
-                    toAdd = Enumerable.Range((int)Math.Min(item.first.X, item.second.X), (int)Math.Abs(item.first.X - item.second.X) + 1)
-                        .Select(it => new Point(it, item.first.Y))
-                        .ToArray();
-                else
-                    toAdd = Enumerable.Range((int)Math.Min(item.first.Y, item.second.Y), (int)Math.Abs(item.first.Y - item.second.Y) + 1)
-                        .Select(it => new Point(item.first.X, it))
-                        .ToArray();
-
-                foreach (var point in toAdd)
-                    walls.Add(point);
-
-                bottom = Math.Max(Math.Max(item.first.Y, item.second.Y), bottom);
-            }
+            var (walls, bottom) = Parse(input);
 
             var fallenSand = new HashSet<Point>();
             bottom += 2;
@@ -132,6 +78,40 @@ namespace AdventOfCode.Solutions._2022
                     break;
                 }
             }
+        }
+
+        private (HashSet<Point> walls, long bottom) Parse(string input)
+        {
+            var wallPoints = Parser.ToArrayOfString(input)
+                .Distinct()
+                .Select(it => Parser.SplitOn(it, ' ', '-', '>')
+                    .Select(p => Parser.SplitOn(p, ','))
+                    .Select(p => new Point(int.Parse(p[0]), int.Parse(p[1])))
+                    .ToArray())
+                .SelectMany(it => it.Zip(it.Skip(1), (first, second) => new { first, second }))
+                .ToArray();
+
+            var walls = new HashSet<Point>();
+            var bottom = 0L;
+            foreach (var item in wallPoints)
+            {
+                Point[] toAdd = null;
+                if (item.first.X != item.second.X)
+                    toAdd = Enumerable.Range((int)Math.Min(item.first.X, item.second.X), (int)Math.Abs(item.first.X - item.second.X) + 1)
+                        .Select(it => new Point(it, item.first.Y))
+                        .ToArray();
+                else
+                    toAdd = Enumerable.Range((int)Math.Min(item.first.Y, item.second.Y), (int)Math.Abs(item.first.Y - item.second.Y) + 1)
+                        .Select(it => new Point(item.first.X, it))
+                        .ToArray();
+
+                foreach (var point in toAdd)
+                    walls.Add(point);
+
+                bottom = Math.Max(Math.Max(item.first.Y, item.second.Y), bottom);
+            }
+
+            return (walls, bottom);
         }
     }
 }
