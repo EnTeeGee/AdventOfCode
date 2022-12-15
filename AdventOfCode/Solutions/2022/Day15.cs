@@ -3,8 +3,6 @@ using AdventOfCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions._2022
 {
@@ -55,23 +53,22 @@ namespace AdventOfCode.Solutions._2022
                 .OrderBy(it => it.size)
                 .ToArray();
 
-            //var limit = 4000000;
-            var limit = 20;
+            var limit = 4000000;
+            //var limit = 20;
 
             for (var i = 0; i < sensors.Length; i++)
             {
                 var item = sensors[i];
                 var targets = Enumerable.Range(0, (int)item.size + 1)
                     .SelectMany(it => new[] {
-                        new Point(item.sensor.X + it, item.sensor.Y - item.size + 1 + it),
-                        new Point(item.sensor.X - item.size + 1 + it, item.sensor.Y + it),
-                        new Point(item.sensor.X - item.size + 1 + it, item.sensor.Y - it),
-                        new Point(item.sensor.X + it, item.sensor.Y - item.size + 1 - it) })
-                    .Distinct()
+                        new Point(item.sensor.X + it, item.sensor.Y - item.size - 1 + it),
+                        new Point(item.sensor.X - item.size + it, item.sensor.Y + 1 + it),
+                        new Point(item.sensor.X - item.size - 1 + it, item.sensor.Y - it),
+                        new Point(item.sensor.X + 1 + it, item.sensor.Y + item.size - it) })
                     .Where(it => it.WithinBounds(0, limit, 0, limit))
                     .ToArray();
 
-                for(var j = 0; j < sensors.Length; j++)
+                for (var j = 0; j < sensors.Length; j++)
                 {
                     if (j == i)
                         continue;
@@ -88,8 +85,7 @@ namespace AdventOfCode.Solutions._2022
                     if (targets.Length > 1)
                         throw new Exception("Found multiple valid points");
 
-                    //return (targets[0].X * limit) + targets[0].Y;
-                    return (targets[0].X * 400000) + targets[0].Y;
+                    return (targets[0].X * limit) + targets[0].Y;
                 }
             }
 
