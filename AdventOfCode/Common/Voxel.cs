@@ -72,6 +72,24 @@ namespace AdventOfCode.Common
             return Math.Abs(X - target.X) + Math.Abs(Y - target.Y) + Math.Abs(Z - target.Z);
         }
 
+        public Voxel[] GetSurrounding6()
+        {
+            return new[]
+            {
+                new Voxel(X, Y, Z + 1),
+                new Voxel(X, Y, Z - 1),
+                new Voxel(X, Y + 1, Z),
+                new Voxel(X, Y - 1, Z),
+                new Voxel(X + 1, Y, Z),
+                new Voxel(X - 1, Y, Z)
+            };
+        }
+
+        public bool WithinBounds(int minX, int maxX, int minY, int maxY, int minZ, int maxZ)
+        {
+            return X >= minX && X <= maxX && Y >= minY && Y <= maxY && Z >= minZ && Z <= maxZ;
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is Voxel cast))
