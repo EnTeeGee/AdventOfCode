@@ -41,77 +41,130 @@ namespace AdventOfCode.Solutions._2022
         {
             var blueprints = Parser.ToArrayOf(input, it => new Blueprint(it));
             var startingPerMinute = new[] { 1, 0, 0, 0 };
+            var startingResources = new[] { 0, 0, 0, 0 };
+            var bestGeodeCount = 0;
 
-            var test1 = GetBestFor(1, blueprints[0], new int?[4], startingPerMinute);
-
-            var best = blueprints.Select(it => new { id = it.Id, total = GetBestFor(1, it, new int?[4], startingPerMinute) })
-                .OrderByDescending(it => it.total)
-                .First();
-
-            return best.id * best.total;
-        }
-
-        private int GetBestFor(int minute, Blueprint blueprint, int?[] resources, int[] perMinute)
-        {
-            if (minute == 24)
-                return resources[3].GetValueOrDefault();
-
-            var bestResult = 0;
-            var updatedResources = resources.Zip(perMinute, (a, b) => b == 0 ? a : a.GetValueOrDefault() + b).ToArray();
-
-            for (var i = 0; i < 4; i++)
+            foreach(var item in blueprints)
             {
-                if (blueprint.CouldBuild(i, resources))
+                //var currentMinute = 1;
+                var currentMinute = 0;
+                var currentResources = startingResources;
+                var currentPerMin = startingPerMinute;
+                while (true)
                 {
-                    var tempResources = resources.ToArray();
-                    var tempPerMinute = perMinute.ToArray();
-                    if (blueprint.TryBuild(i, tempResources))
+                    var bestOption = CheckBestOption(currentResources, currentPerMin, item);
+
+                    var newValues = GetForState(currentMinute, currentResources, currentPerMin, item.Robots[bestOption]).Value;
+                    if(newValues.newTime >= 24)
                     {
-                        tempResources = updatedResources.ToArray();
-                        blueprint.TryBuild(i, tempResources);
-                        tempPerMinute[i] += 1;
-                        bestResult = Math.Max(bestResult, GetBestFor(minute + 1, blueprint, tempResources, tempPerMinute));
+                        bestGeodeCount = Math.Max(bestGeodeCount, currentResources[3]);
+
+                        break;
                     }
+
+                    currentMinute = newValues.newTime;
+                    currentResources = newValues.newResources;
+                    currentPerMin = newValues.newPerMin;
                 }
+                //var bestOption = CheckBestOption()
+                //var bestOption = 
             }
 
-            //Also do a run where nothing is created, to handle objects costing more than we currently have
-            bestResult = Math.Max(bestResult, GetBestFor(minute + 1, blueprint, updatedResources, perMinute));
-
-            return bestResult;
+            return bestGeodeCount;
         }
+
+        private int CheckBestOption(int[] resources, int[] perMin, Blueprint blueprint)
+        {
+            var options = Permutations.GetPermutations(blueprint.Robots);
+
+            foreach(var item in options)
+            {
+                var test1 = TimeToProduce(resources, perMin, item);
+            }
+
+            var result = options.Select(it => new { robArray = it, result = TimeToProduce(resources, perMin, it) })
+                .Where(it => it.result != null)
+                .OrderBy(it => it.result)
+                .First();
+
+            return result.robArray.First().Id;
+        }
+
+        private int? TimeToProduce(int[] resources, int[] perMin, Robot[] robots)
+        {
+            var totalTime = 0;
+            foreach(var item in robots)
+            {
+                var result = GetForState(totalTime, resources, perMin, item);
+                if (result == null)
+                    return null;
+
+                totalTime += result.Value.newTime;
+                resources = result.Value.newResources;
+                perMin = result.Value.newPerMin;
+                if (item.Id == 3)
+                    return totalTime;
+            }
+
+            return totalTime;
+        }
+        private (int newTime, int[] newResources, int[] newPerMin)? GetForState(int currentMin, int[] resources, int[] perMin, Robot robot)
+        {
+            if (robot.Cost.Zip(perMin, (a, b) => a != 0 && b == 0).Any(it => it))
+                return null;
+
+            var timeForRobot = 0;
+            for (var i = 0; i < robot.Cost.Length; i++)
+            {
+                var result = TimeNeeded(robot.Cost[i], perMin[i], resources[i]);
+                timeForRobot = Math.Max(timeForRobot, result);
+            }
+            timeForRobot += 1;
+
+            resources = resources.Zip(perMin, (a, b) => a + (b * timeForRobot)).ToArray();
+            resources = resources.Zip(robot.Cost, (a, b) => a - b).ToArray();
+            perMin = perMin.ToArray();
+            perMin[robot.Id] += 1;
+
+            return (currentMin + timeForRobot, resources, perMin);
+        }
+
+        private int TimeNeeded(int cost, int perMin, int resources)
+        {
+            var required = cost - resources;
+            if (required <= 0)
+                return 0;
+
+            return ((required - 1) / perMin) + 1;
+        }
+        
 
         private class Blueprint
         {
             public int Id { get; }
-            private int[][] robots;
+            public Robot[] Robots { get; }
 
             public Blueprint(string input)
             {
                 var items = Parser.SplitOnSpace(input);
                 Id = int.Parse(items[1].TrimEnd(':'));
-                robots = new[] {
-                    new[] { int.Parse(items[6]), 0, 0 },
-                    new[] { int.Parse(items[12]), 0, 0 },
-                    new[] { int.Parse(items[18]), int.Parse(items[21]), 0 },
-                    new[] { int.Parse(items[27]), 0, int.Parse(items[30]) } };
+                Robots = new[] {
+                    new Robot(0, new[]{ int.Parse(items[6]), 0, 0, 0 }),
+                    new Robot(1, new[] { int.Parse(items[12]), 0, 0, 0 }),
+                    new Robot(2, new[] { int.Parse(items[18]), int.Parse(items[21]), 0, 0 }),
+                    new Robot(3, new[] { int.Parse(items[27]), 0, int.Parse(items[30]), 0 }) };
             }
+        }
 
-            public bool CouldBuild(int robot, int?[] resources)
+        private class Robot
+        {
+            public int Id { get; }
+            public int[] Cost { get; }
+
+            public Robot(int id, int[] cost)
             {
-                return robots[robot].Zip(resources, (a, b) => a == 0 || b != null).All(it => it);
-            }
-
-            public bool TryBuild(int robot, int?[] resources)
-            {
-                if(robots[robot].Zip(resources, (a, b) => b == null ? true : b.Value - a >= 0).All(it => it))
-                {
-                    for (var i = 0; i < resources.Length - 1; i++)
-                        resources[i] = robots[robot][i] != 0 ? resources[i] - robots[robot][i] : resources[i];
-                    return true;
-                }
-
-                return false;
+                Id = id;
+                Cost = cost;
             }
         }
     }
