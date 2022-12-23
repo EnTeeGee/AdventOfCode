@@ -3,29 +3,42 @@ using AdventOfCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions._2022
 {
     class Day19
     {
         [Solution(19, 1)]
-        public int Solution1B(string input)
+        public int Solution1(string input)
         {
             var blueprints = Parser.ToArrayOf(input, it => new Blueprint(it));
             var qualityLevel = 0;
 
             for(var i = 0; i < blueprints.Length; i++)
             {
-                var result = CaculateForBlueprint(blueprints[i]);
+                var result = CaculateForBlueprint(blueprints[i], 24);
                 qualityLevel += (result * (i + 1));
             }
 
             return qualityLevel;
         }
 
-        private int CaculateForBlueprint(Blueprint blueprint)
+        [Solution(19, 2)]
+        public int Solution2(string input)
+        {
+            var blueprints = Parser.ToArrayOf(input, it => new Blueprint(it)).Take(3).ToArray();
+            var output = 1;
+
+            foreach(var item in blueprints)
+            {
+                var result = CaculateForBlueprint(item, 32);
+                output *= result;
+            }
+
+            return output;
+        }
+
+        private int CaculateForBlueprint(Blueprint blueprint, int target)
         {
             var initialState = new State(0, new[] { 0, 0, 0, 0 }, new[] { 1, 0, 0, 0 });
             var best = 0;
@@ -46,18 +59,20 @@ namespace AdventOfCode.Solutions._2022
                     if (limits.Zip(updated.Value.newPerMin, (a, b) => a < b).Any(it => it))
                         continue;
 
-                    if(updated.Value.newTime > 24)
+                    if(updated.Value.newTime > target)
                     {
-                        best = Math.Max(best, GetTotalGeode(24 - current.Minute, current.Resources[3], current.PerMinute[3]));
+                        best = Math.Max(best, GetTotalGeode(target - current.Minute, current.Resources[3], current.PerMinute[3]));
 
                         continue;
                     }
 
+                    if (PossibleMax(target - current.Minute, current.Resources[3], current.PerMinute[3]) <= best)
+                        continue;
+
                     var newState = new State(updated.Value.newTime, updated.Value.newResources, updated.Value.newPerMin);
-                    newState.PriorState = current;
+                    //newState.PriorState = current;
                     bounday.Enqueue(newState);
                 }
-
             }
 
             return best;
@@ -97,6 +112,11 @@ namespace AdventOfCode.Solutions._2022
         private int GetTotalGeode(int minutesLeft, int current, int perMin)
         {
             return current + (minutesLeft * perMin);
+        }
+
+        private int PossibleMax(int minutesLeft, int current, int perMin)
+        {
+            return GetTotalGeode(minutesLeft, current, perMin) + ((minutesLeft * (minutesLeft + 1)) / 2);
         }
         
 
