@@ -10,104 +10,60 @@ namespace AdventOfCode.Solutions._2022
 {
     class Day19
     {
-        // Try and figure out the way to get to 1 geode cracker as fast as possible.
-        // If that's less than 24, figure out the way to 2 and so on
-
-        // example costs:
-        // ore: 4 ore
-        // clay: 2 ore
-        // obs: 2 ore, 14 clay
-        // geode: 2 ore, 7 obs
-
-        // example process:
-        // ore collection stays at 1/sec
-        // gets clay up to 3/sec
-        // gets obsidian up to 1/sec
-        // raises clay to 4/sec
-        // raises obsidian to 2/sec
-        // then makes geode crackers
-
-        // to make 1 geode:
-        // we need 2 minutes to make the robot and mine one
-        // we need to make 2 ore (2 minutes of ore production
-        // we need to make 7 obsidian
-
-
-        
-
-
         [Solution(19, 1)]
-        public int Solution1(string input)
+        public int Solution1B(string input)
         {
             var blueprints = Parser.ToArrayOf(input, it => new Blueprint(it));
-            var startingPerMinute = new[] { 1, 0, 0, 0 };
-            var startingResources = new[] { 0, 0, 0, 0 };
-            var bestGeodeCount = 0;
+            var qualityLevel = 0;
 
-            foreach(var item in blueprints)
+            for(var i = 0; i < blueprints.Length; i++)
             {
-                //var currentMinute = 1;
-                var currentMinute = 0;
-                var currentResources = startingResources;
-                var currentPerMin = startingPerMinute;
-                while (true)
+                var result = CaculateForBlueprint(blueprints[i]);
+                qualityLevel += (result * (i + 1));
+            }
+
+            return qualityLevel;
+        }
+
+        private int CaculateForBlueprint(Blueprint blueprint)
+        {
+            var initialState = new State(0, new[] { 0, 0, 0, 0 }, new[] { 1, 0, 0, 0 });
+            var best = 0;
+            var bounday = new Queue<State>();
+            bounday.Enqueue(initialState);
+            var limits = blueprint.GetCostLimits();
+
+            while (bounday.Any())
+            {
+                var current = bounday.Dequeue();
+
+                foreach(var item in blueprint.Robots)
                 {
-                    var bestOption = CheckBestOption(currentResources, currentPerMin, item);
+                    var updated = GetForState(current.Minute, current.Resources, current.PerMinute, item);
+                    if (updated == null)
+                        continue;
 
-                    var newValues = GetForState(currentMinute, currentResources, currentPerMin, item.Robots[bestOption]).Value;
-                    if(newValues.newTime >= 24)
+                    if (limits.Zip(updated.Value.newPerMin, (a, b) => a < b).Any(it => it))
+                        continue;
+
+                    if(updated.Value.newTime > 24)
                     {
-                        bestGeodeCount = Math.Max(bestGeodeCount, currentResources[3]);
+                        best = Math.Max(best, GetTotalGeode(24 - current.Minute, current.Resources[3], current.PerMinute[3]));
 
-                        break;
+                        continue;
                     }
 
-                    currentMinute = newValues.newTime;
-                    currentResources = newValues.newResources;
-                    currentPerMin = newValues.newPerMin;
+                    var newState = new State(updated.Value.newTime, updated.Value.newResources, updated.Value.newPerMin);
+                    newState.PriorState = current;
+                    bounday.Enqueue(newState);
                 }
-                //var bestOption = CheckBestOption()
-                //var bestOption = 
+
             }
 
-            return bestGeodeCount;
+            return best;
         }
 
-        private int CheckBestOption(int[] resources, int[] perMin, Blueprint blueprint)
-        {
-            var options = Permutations.GetPermutations(blueprint.Robots);
 
-            foreach(var item in options)
-            {
-                var test1 = TimeToProduce(resources, perMin, item);
-            }
-
-            var result = options.Select(it => new { robArray = it, result = TimeToProduce(resources, perMin, it) })
-                .Where(it => it.result != null)
-                .OrderBy(it => it.result)
-                .First();
-
-            return result.robArray.First().Id;
-        }
-
-        private int? TimeToProduce(int[] resources, int[] perMin, Robot[] robots)
-        {
-            var totalTime = 0;
-            foreach(var item in robots)
-            {
-                var result = GetForState(totalTime, resources, perMin, item);
-                if (result == null)
-                    return null;
-
-                totalTime += result.Value.newTime;
-                resources = result.Value.newResources;
-                perMin = result.Value.newPerMin;
-                if (item.Id == 3)
-                    return totalTime;
-            }
-
-            return totalTime;
-        }
         private (int newTime, int[] newResources, int[] newPerMin)? GetForState(int currentMin, int[] resources, int[] perMin, Robot robot)
         {
             if (robot.Cost.Zip(perMin, (a, b) => a != 0 && b == 0).Any(it => it))
@@ -137,6 +93,11 @@ namespace AdventOfCode.Solutions._2022
 
             return ((required - 1) / perMin) + 1;
         }
+
+        private int GetTotalGeode(int minutesLeft, int current, int perMin)
+        {
+            return current + (minutesLeft * perMin);
+        }
         
 
         private class Blueprint
@@ -154,6 +115,16 @@ namespace AdventOfCode.Solutions._2022
                     new Robot(2, new[] { int.Parse(items[18]), int.Parse(items[21]), 0, 0 }),
                     new Robot(3, new[] { int.Parse(items[27]), 0, int.Parse(items[30]), 0 }) };
             }
+
+            public int[] GetCostLimits()
+            {
+                return new[]
+                {
+                    Robots.Select(it => it.Cost[0]).Max(),
+                    Robots[2].Cost[1],
+                    Robots[3].Cost[2]
+                };
+            }
         }
 
         private class Robot
@@ -165,6 +136,22 @@ namespace AdventOfCode.Solutions._2022
             {
                 Id = id;
                 Cost = cost;
+            }
+        }
+
+        private class State
+        {
+            public int Minute { get; }
+            public int[] Resources { get; }
+            public int[] PerMinute { get; }
+
+            public State PriorState { get; set; }
+
+            public State(int minute, int[] resourecs, int[] perMinute)
+            {
+                Minute = minute;
+                Resources = resourecs;
+                PerMinute = perMinute;
             }
         }
     }
