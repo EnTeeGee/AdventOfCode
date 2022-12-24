@@ -155,6 +155,7 @@
     <Compile Include="Solutions\2022\Day17.cs" />
     <Compile Include="Solutions\2022\Day18.cs" />
     <Compile Include="Solutions\2022\Day19.cs" />
+    <Compile Include="Solutions\2022\Day20.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
