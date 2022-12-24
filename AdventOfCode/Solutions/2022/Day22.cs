@@ -3,14 +3,11 @@ using AdventOfCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions._2022
 {
     class Day22
     {
-        //192034 too high
         [Solution(22, 1)]
         public long Solution1(string input)
         {
@@ -205,26 +202,26 @@ namespace AdventOfCode.Solutions._2022
                 if(size == 50)
                 {
                     // A - J
-                    output.Add(new Mapping(new Point(50 + i, 1), Orientation.North), new Mapping(new Point(0, 150 + i), Orientation.East));
-                    output.Add(new Mapping(new Point(-1, 150 + i), Orientation.West), new Mapping(new Point(50 + i, 0), Orientation.South));
+                    output.Add(new Mapping(new Point(50 + i, 1), Orientation.North), new Mapping(new Point(0, -(150 + i)), Orientation.East));
+                    output.Add(new Mapping(new Point(-1, -(150 + i)), Orientation.West), new Mapping(new Point(50 + i, 0), Orientation.South));
                     // B - I
-                    output.Add(new Mapping(new Point(100 + i, 1), Orientation.North), new Mapping(new Point(i, 199), Orientation.North));
-                    output.Add(new Mapping(new Point(i, 200), Orientation.South), new Mapping(new Point(100 + i, 0), Orientation.South));
+                    output.Add(new Mapping(new Point(100 + i, 1), Orientation.North), new Mapping(new Point(i, -199), Orientation.North));
+                    output.Add(new Mapping(new Point(i, -200), Orientation.South), new Mapping(new Point(100 + i, 0), Orientation.South));
                     // C - F
-                    output.Add(new Mapping(new Point(150, i), Orientation.East), new Mapping(new Point(99, 149 - i), Orientation.West));
-                    output.Add(new Mapping(new Point(100, 100 + i), Orientation.East), new Mapping(new Point(149, 49 - i), Orientation.West));
+                    output.Add(new Mapping(new Point(150, -i), Orientation.East), new Mapping(new Point(99, -(149 - i)), Orientation.West));
+                    output.Add(new Mapping(new Point(100, -(100 + i)), Orientation.East), new Mapping(new Point(149, -(49 - i)), Orientation.West));
                     // D - E
-                    output.Add(new Mapping(new Point(100 + i, 50), Orientation.South), new Mapping(new Point(99, 50 + i), Orientation.West));
-                    output.Add(new Mapping(new Point(100, 50 + i), Orientation.East), new Mapping(new Point(100 + i, 49), Orientation.North));
+                    output.Add(new Mapping(new Point(100 + i, -50), Orientation.South), new Mapping(new Point(99, -(50 + i)), Orientation.West));
+                    output.Add(new Mapping(new Point(100, -(50 + i)), Orientation.East), new Mapping(new Point(100 + i, -49), Orientation.North));
                     // G - H
-                    output.Add(new Mapping(new Point(50 + i, 150), Orientation.South), new Mapping(new Point(49, 150 + i), Orientation.West));
-                    output.Add(new Mapping(new Point(50, 150 + i), Orientation.East), new Mapping(new Point(50 + i, 149), Orientation.North));
+                    output.Add(new Mapping(new Point(50 + i, -150), Orientation.South), new Mapping(new Point(49, -(150 + i)), Orientation.West));
+                    output.Add(new Mapping(new Point(50, -(150 + i)), Orientation.East), new Mapping(new Point(50 + i, -149), Orientation.North));
                     // K - N
-                    output.Add(new Mapping(new Point(-1, 100 + i), Orientation.West), new Mapping(new Point(50, 49 - i), Orientation.East));
-                    output.Add(new Mapping(new Point(49, i), Orientation.West), new Mapping(new Point(0, 149 - i), Orientation.East));
+                    output.Add(new Mapping(new Point(-1, -(100 + i)), Orientation.West), new Mapping(new Point(50, -(49 - i)), Orientation.East));
+                    output.Add(new Mapping(new Point(49, -i), Orientation.West), new Mapping(new Point(0, -(149 - i)), Orientation.East));
                     // L - M
-                    output.Add(new Mapping(new Point(i, 99), Orientation.North), new Mapping(new Point(50, 50 + i), Orientation.East));
-                    output.Add(new Mapping(new Point(49, 50 + i), Orientation.East), new Mapping(new Point(i, 100), Orientation.South));
+                    output.Add(new Mapping(new Point(i, -99), Orientation.North), new Mapping(new Point(50, -(50 + i)), Orientation.East));
+                    output.Add(new Mapping(new Point(49, -(50 + i)), Orientation.West), new Mapping(new Point(i, -100), Orientation.South));
                 }
                 else
                 {
