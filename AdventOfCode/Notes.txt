@@ -1,0 +1,2 @@
+﻿Answer pages have a url in the format "https://adventofcode.com/[year]/day/[day]/answer"
+for example https://adventofcode.com/2022/day/25/answer
