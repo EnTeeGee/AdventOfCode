@@ -33,14 +33,23 @@ namespace AdventOfCode.Core
 
         public bool CheckRequest(string[] args)
         {
-            if(args.Length == 1 && args[0].ToLower() == "year")
+            if (args.Length == 0)
+                return false;
+
+            var head = args[0].ToLower();
+            if (head != "year" && head != "y")
+                return false;
+
+            args = args.Skip(1).ToArray();
+
+            if(args.Length == 0)
             {
                 Console.WriteLine($"Current year is {CurrentYear}.");
 
                 return true;
             }
 
-            if (args.Length >= 2 && args[0].ToLower() == "year" && int.TryParse(args[1], out var newYear))
+            if (args.Length >= 1 && int.TryParse(args[0], out var newYear))
             {
                 if (!availableYears.Contains(newYear))
                     Console.WriteLine($"No solutions found for year {newYear}");
