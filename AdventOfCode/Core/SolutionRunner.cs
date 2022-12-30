@@ -135,6 +135,7 @@ namespace AdventOfCode.Core
 
             try
             {
+                Console.WriteLine($"Running solution for day {solutionMapping.Day} part {solutionMapping.Problem}...");
                 var output = RunIsolatedInstance(input, solutionMapping);
                 Console.WriteLine($"Solution for day {solutionMapping.Day}, problem {solutionMapping.Problem}:");
                 Console.WriteLine(output.Result);
