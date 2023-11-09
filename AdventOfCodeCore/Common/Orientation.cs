@@ -1,6 +1,6 @@
-﻿namespace AdventOfCode.Common
+﻿namespace AdventOfCodeCore.Common
 {
-    enum Orientation
+    internal enum Orientation
     {
         North = 0,
         East = 1,
