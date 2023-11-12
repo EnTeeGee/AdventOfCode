@@ -26,7 +26,7 @@ namespace AdventOfCodeCore.Solutions._2017
                     return pos.GetTaxiCabDistanceTo(Point.Origin);
 
                 var dist = (Math.Min(i + step, target) - i);
-                pos = pos.MoveNorth(dist);
+                pos = pos.MoveNorth(-dist);
                 i += dist;
                 step += 1;
                 if (i == target)
@@ -39,7 +39,7 @@ namespace AdventOfCodeCore.Solutions._2017
                     return pos.GetTaxiCabDistanceTo(Point.Origin);
 
                 dist = (Math.Min(i + step, target) - i);
-                pos = pos.MoveNorth(-dist);
+                pos = pos.MoveNorth(dist);
                 i += dist;
                 if (i == target)
                     return pos.GetTaxiCabDistanceTo(Point.Origin);
@@ -75,7 +75,7 @@ namespace AdventOfCodeCore.Solutions._2017
 
                 for(var i = 0; i < step; i++)
                 {
-                    pos = pos.MoveNorth();
+                    pos = pos.MoveNorth(1);
                     result = SumAround(pos, map);
                     if (result > target)
                         return result;

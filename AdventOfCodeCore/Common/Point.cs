@@ -18,7 +18,7 @@ namespace AdventOfCodeCore.Common
 
         public Point MoveNorth(long distance = 1)
         {
-            return new Point(X, Y + distance);
+            return new Point(X, Y - distance);
         }
 
         public Point MoveEast(long distance = 1)
