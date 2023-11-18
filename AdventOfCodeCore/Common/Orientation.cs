@@ -19,5 +19,10 @@
         {
             return (Orientation)((((int)start) + 3) % 4);
         }
+
+        public static Orientation Reverse(this Orientation start)
+        {
+            return (Orientation)((((int)start) + 2) % 4);
+        }
     }
 }

@@ -69,6 +69,16 @@ namespace AdventOfCodeCore.Common
             };
         }
 
+        public Point RotateClockwise()
+        {
+            return new Point(-Y, X);
+        }
+
+        public Point RotateCounterClock()
+        {
+            return new Point(Y, -X);
+        }
+
         public long GetTaxiCabDistanceTo(Point target)
         {
             return Math.Abs(X - target.X) + Math.Abs(Y - target.Y);
