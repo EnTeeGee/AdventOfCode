@@ -6,7 +6,7 @@ namespace AdventOfCodeCore.Core
     {
         public static string? Read()
         {
-            return ClipboardService.GetText();
+            return ClipboardService.GetText()?.Trim('\n', '\r');
         }
 
         public static void Write(string data)
