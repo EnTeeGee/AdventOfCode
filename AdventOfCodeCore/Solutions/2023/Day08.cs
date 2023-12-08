@@ -36,51 +36,40 @@ namespace AdventOfCodeCore.Solutions._2023
                 item.Value.AssignNodes(nodes);
 
             var current = nodes.Values.Where(it => it.Name.EndsWith('A')).ToArray();
-            var finishedSteps = new List<long>();
-            var cycles = new List<Cycle>();
+            var steps = new List<long>();
 
             foreach(var item in current)
             {
                 var currentItem = item;
                 var step = 0L;
-                var lead = 0L;
                 while (true)
                 {
                     if (currentItem.Name.EndsWith('Z'))
                     {
-                        if (lead == 0)
-                            lead = step;
-                        else
-                            break;
+                        steps.Add(step);
+                        break;
                     }
 
                     currentItem = moves[(int)(step % moves.Length)] == 'L' ? currentItem.Left : currentItem.Right;
                     step++;
                 }
-
-                var loops = (step / 2) / moves.Length;
-                var test = (step / 2) % moves.LongCount();
-
-                cycles.Add(new Cycle(item.Name, loops));
             }
 
-            var lcm = cycles[0].Loops;
-            var test2 = cycles.Select(it => Primes.IsPrime(it.Loops)).ToArray();
+            var lcm = steps[0];
 
-            foreach (var item in cycles.Skip(1))
+            foreach(var item in steps.Skip(1))
             {
                 var newLcm = lcm;
                 while (true)
                 {
-                    if(newLcm % item.Loops == 0)
+                    if (newLcm % item == 0)
                         break;
-
                     newLcm += lcm;
                 }
                 lcm = newLcm;
             }
 
-            return lcm * moves.Length;
+            return lcm;
         }
 
         private class Node
@@ -105,37 +94,6 @@ namespace AdventOfCodeCore.Solutions._2023
             {
                 Left = nodes[LeftName];
                 Right = nodes[RightName];
-            }
-        }
-
-        private class State
-        {
-            public string Node { get; }
-            public int Step { get; }
-            public long TotalSteps { get; }
-
-            public State(string node, int step,  long totalSteps)
-            {
-                this.Node = node;
-                this.Step = step;
-                this.TotalSteps = totalSteps;
-            }
-
-            public bool Equals(State other)
-            {
-                return Node == other.Node && Step == other.Step && TotalSteps == other.TotalSteps;
-            }
-        }
-
-        private class Cycle
-        {
-            public string StartingNode { get; }
-            public long Loops { get; }
-
-            public Cycle(string startingNode,  long loops)
-            {
-                StartingNode = startingNode;
-                Loops = loops;
             }
         }
     }
