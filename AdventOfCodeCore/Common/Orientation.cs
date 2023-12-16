@@ -24,5 +24,15 @@
         {
             return (Orientation)((((int)start) + 2) % 4);
         }
+
+        public static bool IsVert(this Orientation dir)
+        {
+            return (dir == Orientation.North || dir == Orientation.South);
+        }
+
+        public static bool IsHori(this Orientation dir)
+        {
+            return (dir == Orientation.West || dir == Orientation.East);
+        }
     }
 }
