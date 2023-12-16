@@ -10,13 +10,14 @@ namespace AdventOfCodeCore.Solutions._2023
         {
             var map = new Map(input);
             var state = new State();
+            var seenBounds = new HashSet<Point>();
 
-            var boundary = new Queue<Step>();
-            boundary.Enqueue(new Step(Point.Origin, Orientation.East));
+            var boundary = new Queue<(Point pos, Orientation dir)>();
+            boundary.Enqueue((Point.Origin, Orientation.East));
             while (boundary.Any())
             {
                 var current = boundary.Dequeue();
-                var newSteps = IterateMap(current.Pos, current.Dir, map, state);
+                var newSteps = IterateMap(current.pos, current.dir, map, state, seenBounds);
                 foreach(var item in newSteps)
                     boundary.Enqueue(item);
             }
@@ -28,69 +29,47 @@ namespace AdventOfCodeCore.Solutions._2023
         public int Solution2(string input)
         {
             var map = new Map(input);
-            var state = new State();
             var max = 0;
 
-            for(var y = 0; y < map.Bounds.Y; y++)
+            var startingStates = Enumerable.Range(0, (int)map.Bounds.X).Select(it => (new Point(it, 0), Orientation.South))
+                .Concat(Enumerable.Range(0, (int)map.Bounds.X).Select(it => (new Point(it, map.Bounds.Y - 1), Orientation.South)))
+                .Concat(Enumerable.Range(0, (int)map.Bounds.Y).Select(it => (new Point(0, it), Orientation.East)))
+                .Concat(Enumerable.Range(0, (int)map.Bounds.X).Select(it => (new Point(map.Bounds.X - 1, it), Orientation.West)))
+                .ToArray();
+            var seenBounds = new HashSet<Point>();
+
+            foreach(var item in startingStates)
             {
-                var boundary = new Queue<Step>();
-                boundary.Enqueue(new Step(new Point(0, y), Orientation.East));
-                while (boundary.Any())
-                {
-                    var current = boundary.Dequeue();
-                    var newSteps = IterateMap(current.Pos, current.Dir, map, state);
-                    foreach (var item in newSteps)
-                        boundary.Enqueue(item);
-                }
-                max = Math.Max(max, state.VertBeams.Concat(state.HoriBeams).Distinct().Count());
-                state.Clear();
+                var outer = item.Item1.MoveOrient(item.Item2, -1);
+                if (seenBounds.Contains(outer))
+                    continue;
+                seenBounds.Add(outer);
 
-                boundary.Enqueue(new Step(new Point(map.Bounds.X - 1, y), Orientation.West));
+                var state = new State();
+                var boundary = new Queue<(Point pos, Orientation dir)>();
+                boundary.Enqueue(item);
                 while (boundary.Any())
                 {
                     var current = boundary.Dequeue();
-                    var newSteps = IterateMap(current.Pos, current.Dir, map, state);
-                    foreach (var item in newSteps)
-                        boundary.Enqueue(item);
+                    var newSteps = IterateMap(current.pos, current.dir, map, state, seenBounds);
+                    foreach (var step in newSteps)
+                        boundary.Enqueue(step);
                 }
                 max = Math.Max(max, state.VertBeams.Concat(state.HoriBeams).Distinct().Count());
-                state.Clear();
-            }
-
-            for(var x = 0; x < map.Bounds.X; x++)
-            {
-                var boundary = new Queue<Step>();
-                boundary.Enqueue(new Step(new Point(x, 0), Orientation.South));
-                while (boundary.Any())
-                {
-                    var current = boundary.Dequeue();
-                    var newSteps = IterateMap(current.Pos, current.Dir, map, state);
-                    foreach (var item in newSteps)
-                        boundary.Enqueue(item);
-                }
-                max = Math.Max(max, state.VertBeams.Concat(state.HoriBeams).Distinct().Count());
-                state.Clear();
-
-                state = new State();
-                boundary.Enqueue(new Step(new Point(x, map.Bounds.Y - 1), Orientation.North));
-                while (boundary.Any())
-                {
-                    var current = boundary.Dequeue();
-                    var newSteps = IterateMap(current.Pos, current.Dir, map, state);
-                    foreach (var item in newSteps)
-                        boundary.Enqueue(item);
-                }
-                max = Math.Max(max, state.VertBeams.Concat(state.HoriBeams).Distinct().Count());
-                state.Clear();
             }
 
             return max;
         }
 
-        private Step[] IterateMap(Point pos, Orientation dir, Map map, State state)
+        private (Point pos, Orientation dir)[] IterateMap(Point pos, Orientation dir, Map map, State state, HashSet<Point> bounds)
         {
             if (pos.X < 0 || pos.Y < 0 || pos.X >= map.Bounds.X || pos.Y >= map.Bounds.Y)
-                return Array.Empty<Step>();
+            {
+                if(!bounds.Contains(pos))
+                    bounds.Add(pos);
+
+                return Array.Empty<(Point, Orientation)>();
+            }
 
             var covered = (dir.IsVert() && state.VertBeams.Contains(pos)) || (dir.IsHori() && state.HoriBeams.Contains(pos));
             if(!covered)
@@ -103,7 +82,7 @@ namespace AdventOfCodeCore.Solutions._2023
                     dir == Orientation.South ? Orientation.West :
                     Orientation.North);
 
-                return new[] { new Step(pos.MoveOrient(newDir), newDir) }; 
+                return new[] { (pos.MoveOrient(newDir), newDir) }; 
             }
             else if (map.BackMirrors.Contains(pos))
             {
@@ -112,16 +91,16 @@ namespace AdventOfCodeCore.Solutions._2023
                     dir == Orientation.South ? Orientation.East :
                     Orientation.South);
 
-                return new[] { new Step(pos.MoveOrient(newDir), newDir) }; 
+                return new[] { (pos.MoveOrient(newDir), newDir) }; 
             }
             else if (map.VertSplitters.Contains(pos) && dir.IsHori())
-                return new[] { new Step(pos.MoveNorth(), Orientation.North), new Step(pos.MoveNorth(-1), Orientation.South) }; 
+                return new[] { (pos.MoveNorth(), Orientation.North), (pos.MoveNorth(-1), Orientation.South) }; 
             else if (map.HoriSplitters.Contains(pos) && dir.IsVert())
-                return new[] { new Step(pos.MoveEast(), Orientation.East), new Step(pos.MoveEast(-1), Orientation.West) }; 
+                return new[] { (pos.MoveEast(), Orientation.East), (pos.MoveEast(-1), Orientation.West) }; 
             else if(!covered)
-                return new[] { new Step(pos.MoveOrient(dir), dir) };
+                return new[] { (pos.MoveOrient(dir), dir) };
 
-            return Array.Empty<Step>();
+            return Array.Empty<(Point, Orientation)>();
         }
 
         private class Map
@@ -174,18 +153,6 @@ namespace AdventOfCodeCore.Solutions._2023
             {
                 VertBeams.Clear();
                 HoriBeams.Clear();
-            }
-        }
-        
-        private struct Step
-        {
-            public Point Pos { get; }
-            public Orientation Dir { get; }
-
-            public Step(Point pos, Orientation dir)
-            {
-                Pos = pos;
-                Dir = dir;
             }
         }
     }
