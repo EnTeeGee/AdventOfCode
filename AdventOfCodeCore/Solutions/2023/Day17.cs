@@ -8,31 +8,16 @@ namespace AdventOfCodeCore.Solutions._2023
         [Solution(17, 1)]
         public int Solution1(string input)
         {
-            var map = GetMap(input);
-            var limit = new Point(map.Keys.Max(it => it.X), map.Keys.Max(it => it.Y));
-            var boundary = new PriorityQueue<State>((a, b) => a.GetMetric(limit) - b.GetMetric(limit));
-            boundary.Insert(new State(Point.Origin, Orientation.East, 0));
-            boundary.Insert(new State(Point.Origin, Orientation.South, 0));
-            var seen = new HashSet<State>();
-
-            while (boundary.Any())
-            {
-                var current = boundary.Pop()!;
-                if(seen.Contains(current))
-                    continue;
-                seen.Add(current);
-                if (current.Pos.Equals(limit))
-                    return current.HeatLoss;
-                var next = GetNextStates(current, map, 1, 3);
-                foreach (var item in next)
-                    boundary.Insert(item);
-            }
-
-            throw new Exception("Ran out of valid paths");
+            return RunFor(input, 1, 3);
         }
 
         [Solution(17, 2)]
         public int Solution2(string input)
+        {
+            return RunFor(input, 4, 7);
+        }
+
+        private int RunFor(string input, int min, int range)
         {
             var map = GetMap(input);
             var limit = new Point(map.Keys.Max(it => it.X), map.Keys.Max(it => it.Y));
@@ -49,8 +34,8 @@ namespace AdventOfCodeCore.Solutions._2023
                 seen.Add(current);
                 if (current.Pos.Equals(limit))
                     return current.HeatLoss;
-                var next = GetNextStates(current, map, 4, 7);
-                foreach (var item in next)
+                var next = GetNextStates(current, map, min, range);
+                foreach (var item in next.Where(it => !seen.Contains(it)))
                     boundary.Insert(item);
             }
 
@@ -103,7 +88,7 @@ namespace AdventOfCodeCore.Solutions._2023
                 if (obj is not State cast)
                     return false;
 
-                return Pos.Equals(cast.Pos) && Dir == cast.Dir;
+                return Pos.Equals(cast.Pos) && ((int)Dir) % 2 == ((int)cast.Dir) % 2;
             }
 
             public override int GetHashCode()
