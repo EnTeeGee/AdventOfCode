@@ -40,10 +40,10 @@ namespace AdventOfCodeCore.Solutions._2023
             public Orientation Dir { get; }
             public int Dist { get; }
 
-            public Dig(string input, bool isExapnded = false)
+            public Dig(string input, bool isExpanded = false)
             {
                 var chunks = Parser.SplitOnSpace(input);
-                if (!isExapnded)
+                if (!isExpanded)
                 {
                     Dir = chunks[0] == "U" ? Orientation.North
                         : chunks[0] == "R" ? Orientation.East
