@@ -12,94 +12,18 @@ namespace AdventOfCodeCore.Solutions._2023
         {
             var chunks = Parser.ToArrayOfGroups(input);
             var workflows = Parser.ToArrayOf(chunks[0], it => new Workflow(it)).ToDictionary(it => it.Name);
-            var parts = Parser.ToArrayOf(chunks[1], it => new Part(it));
+            var parts = Parser.ToArrayOf(chunks[1], it => new PartRange(it));
 
-            var total = 0;
-            foreach(var item in parts)
-            {
-                var currentWorkflow = "in";
-                while(currentWorkflow != "A" && currentWorkflow != "R")
-                { 
-                    var next = workflows[currentWorkflow];
-                    currentWorkflow = next.Checks.First(it => it.checkFunc(item)).nextWorkflow;
-                }
-
-                if (currentWorkflow == "A")
-                    total += item.Sum();
-            }
-
-            return total;
+            return parts.Where(it => workflows["in"].GetCovered(it, workflows) > 0).Sum(it => it.Start.Sum());
         }
 
         [Solution(19, 2)]
         public long Solution2(string input)
         {
             var chunks = Parser.ToArrayOfGroups(input);
-            var workflows = Parser.ToArrayOf(chunks[0], it => new Workflow2(it)).ToDictionary(it => it.Name);
+            var workflows = Parser.ToArrayOf(chunks[0], it => new Workflow(it)).ToDictionary(it => it.Name);
 
             return workflows["in"].GetCovered(new PartRange(), workflows);
-        }
-
-        private class Workflow
-        {
-            public string Name { get; }
-            public (Func<Part, bool> checkFunc, string nextWorkflow)[] Checks { get; }
-
-            public Workflow(string input)
-            {
-                var chunks = Parser.SplitOn(input, '{', ',', '}');
-                Name = chunks[0];
-                var checksList = new List<(Func<Part, bool>, string)>();
-                foreach(var item in chunks.Skip(1))
-                {
-                    var items = item.Split(':');
-                    if (items.Length == 2)
-                    {
-                        var funcItems = Parser.SplitOn(items[0], '>', '<');
-                        var val = int.Parse(funcItems[1]);
-                        var isGreater = items[0].Contains('>');
-                        var func = (Part part) =>
-                        {
-                            var compValue = funcItems[0] == "x" ? part.X
-                                : funcItems[0] == "m" ? part.M
-                                : funcItems[0] == "a" ? part.A
-                                : part.S;
-
-                            return isGreater ? compValue > val : compValue < val;
-                        };
-                        checksList.Add((func, items[1]));
-                    }
-                    else
-                    {
-                        var func = (Part part) => { return true; };
-                        checksList.Add((func, items[0]));
-                    }
-                }
-
-                Checks = checksList.ToArray();
-            }
-        }
-
-        private class Part
-        {
-            public int X { get; }
-            public int M { get; }
-            public int A { get; }
-            public int S { get; }
-
-            public Part(string input)
-            {
-                var chunks = Parser.SplitOn(input, '=', ',', '}');
-                X = int.Parse(chunks[1]);
-                M = int.Parse(chunks[3]);
-                A = int.Parse(chunks[5]);
-                S = int.Parse(chunks[7]);
-            }
-
-            public int Sum()
-            {
-                return X + M + A + S;
-            }
         }
 
         private class PartRange
@@ -111,6 +35,15 @@ namespace AdventOfCodeCore.Solutions._2023
             {
                 Start = Enumerable.Repeat(1, 4).ToArray();
                 End = Enumerable.Repeat(4.Thousand(), 4).ToArray();
+            }
+
+            public PartRange(string input)
+            {
+                var chunks = Parser.SplitOn(input, '=', ',', '}');
+                Start = new[] { chunks[1], chunks[3], chunks[5], chunks[7] }
+                    .Select(it => int.Parse(it))
+                    .ToArray();
+                End = Start.ToArray();
             }
 
             public PartRange(PartRange toCopy)
@@ -125,12 +58,12 @@ namespace AdventOfCodeCore.Solutions._2023
             }
         }
 
-        private class Workflow2
+        private class Workflow
         {
             public string Name { get; }
             public (string prop, bool greaterThan, int value, string target)[] Checks { get; }
 
-            public Workflow2(string input)
+            public Workflow(string input)
             {
                 var chunks = Parser.SplitOn(input, '{', ',', '}');
                 Name = chunks[0];
@@ -149,7 +82,7 @@ namespace AdventOfCodeCore.Solutions._2023
                 Checks = checkList.ToArray();
             }
 
-            public long GetCovered(PartRange range, Dictionary<string, Workflow2> workflows)
+            public long GetCovered(PartRange range, Dictionary<string, Workflow> workflows)
             {
                 var output = 0L;
                 foreach(var item in Checks)
