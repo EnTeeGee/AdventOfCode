@@ -14,7 +14,7 @@ namespace AdventOfCodeCore.Solutions._2017
             foreach(var item in steps)
                 pos = MapDirectionToMove(pos, item);
 
-            return pos.GetTaxicabDistanceTo(Voxel.Origin) / 2;
+            return (int)pos.GetTaxicabDistanceTo(Voxel.Origin) / 2;
         }
 
         [Solution(11, 2)]
@@ -27,7 +27,7 @@ namespace AdventOfCodeCore.Solutions._2017
             foreach (var item in steps)
             {
                 pos = MapDirectionToMove(pos, item);
-                maxDist = Math.Max(maxDist, pos.GetTaxicabDistanceTo(Voxel.Origin) / 2);
+                maxDist = Math.Max(maxDist, (int)pos.GetTaxicabDistanceTo(Voxel.Origin) / 2);
             }
 
             return maxDist;

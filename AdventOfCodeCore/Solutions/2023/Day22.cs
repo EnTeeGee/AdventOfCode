@@ -89,7 +89,7 @@ namespace AdventOfCodeCore.Solutions._2023
                         .ToArray();
 
                 IsSettled = false;
-                Z = Points.Min(it => it.Z);
+                Z = (int)Points.Min(it => it.Z);
             }
 
             public bool TryLower(Dictionary<Voxel, int> settled)
@@ -113,7 +113,7 @@ namespace AdventOfCodeCore.Solutions._2023
                 }
 
                 Points = steppedDown;
-                Z = Points.Min(it => it.Z);
+                Z = (int)Points.Min(it => it.Z);
 
                 return true;
             }

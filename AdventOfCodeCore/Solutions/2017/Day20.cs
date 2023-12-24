@@ -83,7 +83,7 @@ namespace AdventOfCodeCore.Solutions._2017
 
             public int GetAccelerationMagnitude()
             {
-                return Accel.GetTaxicabDistanceTo(Voxel.Origin);
+                return (int)Accel.GetTaxicabDistanceTo(Voxel.Origin);
             }
 
             public int? IntersectsAt(Particle toCheck)
@@ -98,7 +98,7 @@ namespace AdventOfCodeCore.Solutions._2017
                 if (intersects.Any(it => it == null) || intersects.Distinct().Count() > 1)
                     return null;
 
-                return intersects[0];
+                return (int?)intersects[0];
             }
 
             public Particle Step()
@@ -109,7 +109,7 @@ namespace AdventOfCodeCore.Solutions._2017
                 return new Particle(newPos, newVel, Accel);
             }
 
-            private int? IntersectCheck(int posA, int posB, int velA, int velB, int accA, int accB)
+            private long? IntersectCheck(long posA, long posB, long velA, long velB, long accA, long accB)
             {
                 var step = 0;
 

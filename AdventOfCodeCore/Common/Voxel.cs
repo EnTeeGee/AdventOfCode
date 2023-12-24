@@ -2,13 +2,13 @@
 {
     internal class Voxel
     {
-        public int X { get; }
-        public int Y { get; }
-        public int Z { get; }
+        public long X { get; }
+        public long Y { get; }
+        public long Z { get; }
 
         public static Voxel Origin { get { return new Voxel(0, 0, 0); } }
 
-        public Voxel(int x, int y, int z)
+        public Voxel(long x, long y, long z)
         {
             X = x;
             Y = y;
@@ -61,7 +61,7 @@
             }).ToArray();
         }
 
-        public int GetTaxicabDistanceTo(Voxel target)
+        public long GetTaxicabDistanceTo(Voxel target)
         {
             return Math.Abs(X - target.X) + Math.Abs(Y - target.Y) + Math.Abs(Z - target.Z);
         }
@@ -94,7 +94,7 @@
 
         public override int GetHashCode()
         {
-            return X ^ Y ^ Z;
+            return (X ^ Y ^ Z).GetHashCode();
         }
 
         public override string ToString()
