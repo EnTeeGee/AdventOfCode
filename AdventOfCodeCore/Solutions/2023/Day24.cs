@@ -1,5 +1,7 @@
 ﻿using AdventOfCodeCore.Common;
 using AdventOfCodeCore.Core;
+using System.Collections.Concurrent;
+using System.Reflection.Metadata.Ecma335;
 
 namespace AdventOfCodeCore.Solutions._2023
 {
@@ -25,6 +27,141 @@ namespace AdventOfCodeCore.Solutions._2023
                 .Count();
 
             return result;
+        }
+
+        [Solution(24, 2)]
+        public long Solution2(string input)
+        {
+            // The target will be a line that intersects with every other line.
+            // For each line, take pos at t = 1
+            // then find the next nearest
+            var stones = Parser.ToArrayOf(input, it => new Hailstone(it));
+            var limit = 10000;
+
+            for(var stepsUntilFirst = 1; stepsUntilFirst < limit; stepsUntilFirst++)
+            {
+                for (var i = stepsUntilFirst + 1; i < limit; i++)
+                {
+                    foreach (var item in stones)
+                    {
+                        //var atStart = item.Pos.Add(item.Vel);
+                        var atStart = ShiftBy(item.Pos, item.Vel, stepsUntilFirst);
+                        foreach (var next in stones)
+                        {
+                            if (next == item)
+                                continue;
+
+                            var posAt = ShiftBy(next.Pos, next.Vel, i);
+                            if (((posAt.X - atStart.X) % (i - stepsUntilFirst) != 0)
+                                || ((posAt.Y - atStart.Y) % (i - stepsUntilFirst) != 0)
+                                || ((posAt.Z - atStart.Z) % (i - stepsUntilFirst) != 0))
+                            {
+                                continue;
+                            }
+
+                            var resultingStep = new Voxel(
+                                (posAt.X - atStart.X) / (i - stepsUntilFirst),
+                                (posAt.Y - atStart.Y) / (i - stepsUntilFirst),
+                                (posAt.Z - atStart.Z) / (i - stepsUntilFirst));
+                            var startPoint = new Voxel(
+                                atStart.X - (resultingStep.X * stepsUntilFirst),
+                                atStart.Y - (resultingStep.Y * stepsUntilFirst),
+                                atStart.Z - (resultingStep.Z * stepsUntilFirst));
+
+                            var toCheck = stones.Where(it => it != item && it != next).ToArray();
+                            var allValid = true;
+
+                            foreach (var other in toCheck)
+                            {
+                                if (!other.CollidesWith(startPoint, resultingStep))
+                                {
+                                    allValid = false;
+                                    break;
+                                }
+                            }
+
+                            if (!allValid)
+                                continue;
+
+                            return startPoint.X + startPoint.Y + startPoint.Z;
+                        }
+                    }
+                }
+            }
+
+            //for(var i = 2; i < int.MaxValue; i++)
+            //{
+            //    foreach (var item in stones)
+            //    {
+            //        var atStart = item.Pos.Add(item.Vel);
+            //        foreach(var next in stones)
+            //        {
+            //            if (next == item)
+            //                continue;
+
+            //            var posAt = ShiftBy(next.Pos, next.Vel, i);
+            //            if(((posAt.X - atStart.X) % (i - 1) != 0)
+            //                || ((posAt.Y - atStart.Y) % (i - 1) != 0)
+            //                || ((posAt.Z - atStart.Z) % (i - 1) != 0))
+            //            {
+            //                continue;
+            //            }
+
+            //            var resultingStep = new Voxel(
+            //                (posAt.X - atStart.X) / (i - 1),
+            //                (posAt.Y - atStart.Y) / (i - 1),
+            //                (posAt.Z - atStart.Z) / (i - 1));
+            //            var startPoint = new Voxel(atStart.X - resultingStep.X, atStart.Y - resultingStep.Y, atStart.Z - resultingStep.Z);
+
+            //            var toCheck = stones.Where(it => it != item && it != next).ToArray();
+            //            var allValid = true;
+
+            //            foreach (var other in toCheck)
+            //            {
+            //                if (!other.CollidesWith(startPoint, resultingStep))
+            //                {
+            //                    allValid = false;
+            //                    break;
+            //                }
+            //            }
+
+            //            if (!allValid)
+            //                continue;
+
+            //            return startPoint.X + startPoint.Y + startPoint.Z;
+            //        }
+
+            //        //var closest = stones.Where(it => it != item).OrderBy(it => it.Pos.Add(it.Vel).Add(it.Vel).GetTaxicabDistanceTo(atStart)).First();
+            //        //var closest = stones.Where(it => it != item).OrderBy(it => ShiftBy(it.Pos, it.Vel, i).GetTaxicabDistanceTo(atStart)).First();
+            //        //var closestPos = closest.Pos.Add(closest.Vel).Add(closest.Vel);
+            //        //var resultingStep = new Voxel(closestPos.X - atStart.X, closestPos.Y - atStart.Y, closestPos.Z - atStart.Z);
+            //        //var startPoint = new Voxel(atStart.X - resultingStep.X, atStart.Y - resultingStep.Y, atStart.Z - resultingStep.Z);
+
+            //        //var toCheck = stones.Where(it => it != item && it != closest).ToArray();
+            //        //var allValid = true;
+
+            //        //foreach (var other in toCheck)
+            //        //{
+            //        //    if (!other.CollidesWith(startPoint, resultingStep))
+            //        //    {
+            //        //        allValid = false;
+            //        //        break;
+            //        //    }
+            //        //}
+
+            //        //if (!allValid)
+            //        //    continue;
+
+            //        //return startPoint.X + startPoint.Y + startPoint.Z;
+            //    }
+            //}
+
+            throw new Exception("Failed to find route");
+        }
+
+        private Voxel ShiftBy(Voxel start, Voxel step, int multiple)
+        {
+            return start.Add(new Voxel(step.X * multiple, step.Y * multiple, step.Z * multiple));
         }
 
         private class Hailstone
@@ -63,6 +200,27 @@ namespace AdventOfCodeCore.Solutions._2023
                     return null;
 
                 return (xIntercept, yIntercept);
+            }
+
+            public bool CollidesWith(Voxel start, Voxel step)
+            {
+                var currentPos = start;
+                var currentTarget = Pos;
+                var lastDist = currentPos.GetTaxicabDistanceTo(currentTarget);
+
+                while (true)
+                {
+                    if (currentPos.Equals(currentTarget))
+                        return true;
+
+                    currentPos = currentPos.Add(step);
+                    currentTarget = currentTarget.Add(Vel);
+                    var newDist = currentPos.GetTaxicabDistanceTo(currentTarget);
+                    if (newDist > lastDist)
+                        return false;
+
+                    lastDist = newDist;
+                }
             }
         }
     }
