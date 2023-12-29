@@ -24,5 +24,21 @@
 
             return output.ToArray();
         }
+
+        public static long GCD(long first, long second)
+        {
+            var max = Math.Max(first, second);
+            var min = Math.Min(first, second);
+            var remainder = max % min;
+            if (remainder == 0)
+                return min;
+
+            return GCD(min, remainder);
+        }
+
+        public static long LCM(int first, int second)
+        {
+            return (first * second) / GCD(first, second);
+        }
     }
 }
