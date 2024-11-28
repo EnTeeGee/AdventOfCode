@@ -88,11 +88,11 @@
         {
             var maxIndex = index;
             var leftIndex = GetLeftChild(index);
-            if (leftIndex < heap.Count && heap[index].Priority < heap[leftIndex].Priority)
+            if (leftIndex < heap.Count && heap[maxIndex].Priority < heap[leftIndex].Priority)
                 maxIndex = leftIndex;
 
             var rightIndex = GetRightChild(index);
-            if(rightIndex < heap.Count && heap[index].Priority < heap[rightIndex].Priority)
+            if(rightIndex < heap.Count && heap[maxIndex].Priority < heap[rightIndex].Priority)
                 maxIndex = rightIndex;
 
             if(index != maxIndex)
