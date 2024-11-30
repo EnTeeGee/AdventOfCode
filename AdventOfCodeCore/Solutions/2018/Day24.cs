@@ -47,7 +47,6 @@ namespace AdventOfCodeCore.Solutions._2018
             return immuneSystem.Concat(infection).Sum(it => it.Size);
         }
 
-        // 5411 too low
         [Solution(24, 2)]
         public int Solution2(string input)
         {
