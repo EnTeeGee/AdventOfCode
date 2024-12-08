@@ -35,7 +35,7 @@ namespace AdventOfCodeCore.Solutions._2024
                     .SelectMany(it2 => new[] { it2, it2.Reverse().ToArray() })
                     .SelectMany(it2 => GetHarmonicAntinodes(it2).TakeWhile(it3 => it3.WithinBounds(0, bounds.X, 0, bounds.Y)).ToArray()))
                 .Distinct()
-                .Count(it => it.WithinBounds(0, bounds.X, 0, bounds.Y));
+                .Count();
         }
 
         private Dictionary<char, List<Point>> GetAntennas(string[] lines)
