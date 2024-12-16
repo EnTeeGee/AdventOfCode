@@ -49,6 +49,26 @@
             return toReturn;
         }
 
+        public (T value, int priority) PopMaxWithPriority()
+        {
+            if (!heap.Any())
+                return default((T value, int priority));
+
+            var toReturnValue = heap[0].Values.Pop();
+            var toReturnPriority = heap[0].Priority;
+
+            if (!heap[0].Values.Any())
+            {
+                heapMap.Remove(heap[0].Priority);
+                heap[0] = heap.Last();
+                heap.RemoveAt(heap.Count - 1);
+
+                ShiftDown(0);
+            }
+
+            return (toReturnValue, toReturnPriority);
+        }
+
         public bool Any()
         {
             return heap.Any();
