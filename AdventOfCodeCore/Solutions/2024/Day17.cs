@@ -62,7 +62,7 @@ namespace AdventOfCodeCore.Solutions._2024
                 switch (program[index])
                 {
                     case 0:
-                        registers['A'] /= (long)Math.Pow(2, GetComboOperand(program[index + 1], registers));
+                        registers['A'] >>= (int)GetComboOperand(program[index + 1], registers);
                         break;
                     case 1:
                         registers['B'] ^= program[index + 1];
@@ -84,10 +84,10 @@ namespace AdventOfCodeCore.Solutions._2024
                         output.Add(GetComboOperand(program[index + 1], registers) % 8);
                         break;
                     case 6:
-                        registers['B'] = registers['A'] / (long)Math.Pow(2, GetComboOperand(program[index + 1], registers));
+                        registers['B'] = registers['A'] >> (int)GetComboOperand(program[index + 1], registers);
                         break;
                     case 7:
-                        registers['C'] = registers['A'] / (long)Math.Pow(2, GetComboOperand(program[index + 1], registers));
+                        registers['C'] = registers['A'] >> (int)GetComboOperand(program[index + 1], registers);
                         break;
                 }
 
