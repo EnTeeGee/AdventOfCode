@@ -1,18 +1,19 @@
 ﻿using AdventOfCodeCore.Common;
 using AdventOfCodeCore.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCodeCore.Solutions._2024
 {
     internal class Day21
     {
+        private readonly Dictionary<char, Point> arrowGrid = new Dictionary<char, Point>
+            {
+                { 'A', Point.Origin },
+                { '^', new Point(-1, 0) },
+                { '<', new Point(-2, 1) },
+                { 'v', new Point(-1, 1) },
+                { '>', new Point(0, 1) }
+            };
+
         [Solution(21, 1)]
         public int Solution1(string input)
         {
@@ -30,18 +31,10 @@ namespace AdventOfCodeCore.Solutions._2024
                 { '8', new Point(-1, -3) },
                 { '9', new Point(0, -3) }
             };
-            var arrowGrid = new Dictionary<char, Point>
-            {
-                { 'A', Point.Origin },
-                { '^', new Point(-1, 0) },
-                { '<', new Point(-2, 1) },
-                { 'v', new Point(-1, 1) },
-                { '>', new Point(0, 1) }
-            };
-            var invalid = new Point(-2, 0);
 
             var lines = Parser.ToArrayOfString(input);
             var output = 0;
+            var seen = new Dictionary<(Point, Point), string>();
 
             foreach (var line in lines)
             {
@@ -55,9 +48,7 @@ namespace AdventOfCodeCore.Solutions._2024
                     var testPos = new Point(digitGrid[item].X, digitGrid[currentPos].Y);
 
                     var target = digitGrid[item] - digitGrid[currentPos];
-                    //updatedLine += StepsToPush(target, currentPos != 'A' && currentPos != '0');
-                    //updatedLine += StepsToPush(target, digitGrid.ContainsValue(testPos));
-                    updatedLine += StepsToPushV2(digitGrid[currentPos], digitGrid[item]);
+                    updatedLine += StepsToPushV2(digitGrid[currentPos], digitGrid[item], seen);
                     currentPos = item;
                 }
 
@@ -70,9 +61,7 @@ namespace AdventOfCodeCore.Solutions._2024
                     var testPos = new Point(arrowGrid[item].X, arrowGrid[currentPos].Y);
 
                     var target = arrowGrid[item] - arrowGrid[currentPos];
-                    //updatedLine += StepsToPush(target, currentPos != 'A' && currentPos != '^');
-                    //updatedLine += StepsToPushArrow(target, arrowGrid.ContainsValue(testPos));
-                    updatedLine += StepsToPushV2(arrowGrid[currentPos], arrowGrid[item]);
+                    updatedLine += StepsToPushV2(arrowGrid[currentPos], arrowGrid[item], seen);
                     currentPos = item;
                 }
 
@@ -85,9 +74,7 @@ namespace AdventOfCodeCore.Solutions._2024
                     var testPos = new Point(arrowGrid[item].X, arrowGrid[currentPos].Y);
 
                     var target = arrowGrid[item] - arrowGrid[currentPos];
-                    //updatedLine += StepsToPush(target, currentPos != 'A' && currentPos != '^');
-                    //updatedLine += StepsToPushArrow(target, arrowGrid.ContainsValue(testPos));
-                    updatedLine += StepsToPushV2(arrowGrid[currentPos], arrowGrid[item]);
+                    updatedLine += StepsToPushV2(arrowGrid[currentPos], arrowGrid[item], seen);
                     currentPos = item;
                 }
                 var test1 = int.Parse(line[..3]);
@@ -116,18 +103,9 @@ namespace AdventOfCodeCore.Solutions._2024
                 { '8', new Point(-1, -3) },
                 { '9', new Point(0, -3) }
             };
-            var arrowGrid = new Dictionary<char, Point>
-            {
-                { 'A', Point.Origin },
-                { '^', new Point(-1, 0) },
-                { '<', new Point(-2, 1) },
-                { 'v', new Point(-1, 1) },
-                { '>', new Point(0, 1) }
-            };
-            var invalid = new Point(-2, 0);
 
             var lines = Parser.ToArrayOfString(input);
-            var output = 0;
+            var output = 0L;
 
             foreach (var line in lines)
             {
@@ -135,91 +113,51 @@ namespace AdventOfCodeCore.Solutions._2024
                 var test = currentLine.Length;
                 var currentPos = 'A';
                 var updatedLine = string.Empty;
+                var seen = new Dictionary<(Point, Point), string>();
 
                 foreach (var item in currentLine)
                 {
                     var testPos = new Point(digitGrid[item].X, digitGrid[currentPos].Y);
 
                     var target = digitGrid[item] - digitGrid[currentPos];
-                    //updatedLine += StepsToPush(target, currentPos != 'A' && currentPos != '0');
-                    //updatedLine += StepsToPush(target, digitGrid.ContainsValue(testPos));
-                    updatedLine += StepsToPushV2(digitGrid[currentPos], digitGrid[item]);
+                    updatedLine += StepsToPushV2(digitGrid[currentPos], digitGrid[item], seen);
                     currentPos = item;
                 }
 
                 test = updatedLine.Length;
                 currentLine = updatedLine;
                 updatedLine = string.Empty;
+                var lineOutput = 0L;
+                var seenRecurse = new Dictionary<(Point, Point, int), long>();
+                Console.WriteLine($"Completed initial step, length is: {test}");
 
-                for(var i = 0; i < 25; i++)
+                foreach (var item in currentLine)
                 {
-                    foreach (var item in currentLine)
-                    {
-                        var testPos = new Point(arrowGrid[item].X, arrowGrid[currentPos].Y);
+                    var testPos = new Point(arrowGrid[item].X, arrowGrid[currentPos].Y);
 
-                        var target = arrowGrid[item] - arrowGrid[currentPos];
-                        //updatedLine += StepsToPush(target, currentPos != 'A' && currentPos != '^');
-                        //updatedLine += StepsToPushArrow(target, arrowGrid.ContainsValue(testPos));
-                        updatedLine += StepsToPushV2(arrowGrid[currentPos], arrowGrid[item]);
-                        currentPos = item;
-                    }
-
-                    test = updatedLine.Length;
-                    currentLine = updatedLine;
-                    updatedLine = string.Empty;
+                    var target = arrowGrid[item] - arrowGrid[currentPos];
+                    lineOutput += StepsToPushRecurse(arrowGrid[currentPos], arrowGrid[item], 0, seenRecurse, seen);
+                    currentPos = item;
                 }
 
-                output += (int.Parse(line[..3]) * currentLine.Length);
+                output += (int.Parse(line[..3]) * lineOutput);
             }
 
             return output;
         }
 
-        private string StepsToPush(Point pos, bool horiFirst)
+        private string StepsToPushV2(Point start, Point dest, Dictionary<(Point start, Point end), string> seen)
         {
-            var output = new List<char>();
+            if (seen.ContainsKey((start, dest)))
+                return seen[(start, dest)];
 
-            if (pos.X > 0)
-                output.AddRange(Enumerable.Repeat('>', (int)pos.X));
-            if (horiFirst && pos.X < 0)
-                output.AddRange(Enumerable.Repeat('<', -(int)pos.X));
-            if (pos.Y < 0)
-                output.AddRange(Enumerable.Repeat('^', -(int)pos.Y));
-            if (!horiFirst && pos.X < 0)
-                output.AddRange(Enumerable.Repeat('<', -(int)pos.X));
-            if (pos.Y > 0)
-                output.AddRange(Enumerable.Repeat('v', (int)pos.Y));
-
-            output.Add('A');
-
-            return new string(output.ToArray());
-        }
-
-        private string StepsToPushArrow(Point pos, bool horiFirst)
-        {
-            var output = new List<char>();
-
-            if (pos.Y > 0)
-                output.AddRange(Enumerable.Repeat('v', (int)pos.Y));
-            if (pos.X > 0)
-                output.AddRange(Enumerable.Repeat('>', (int)pos.X));
-            if (horiFirst && pos.X < 0)
-                output.AddRange(Enumerable.Repeat('<', -(int)pos.X));
-            if (pos.Y < 0)
-                output.AddRange(Enumerable.Repeat('^', -(int)pos.Y));
-            if (!horiFirst && pos.X < 0)
-                output.AddRange(Enumerable.Repeat('<', -(int)pos.X));
-
-            output.Add('A');
-
-            return new string(output.ToArray());
-        }
-
-        private string StepsToPushV2(Point start, Point dest)
-        {
             // same key
             if (start == dest)
+            {
+                seen.Add((start, dest), "A");
                 return "A";
+            }
+                
 
             var invalid = new Point(-2, 0);
             var output = new List<char>();
@@ -238,6 +176,7 @@ namespace AdventOfCodeCore.Solutions._2024
                     output.AddRange(Enumerable.Repeat('^', -(int)diff.Y));
 
                 output.Add('A');
+                seen.Add((start, dest), new string(output.ToArray()));
 
                 return new string(output.ToArray());
             }
@@ -253,10 +192,6 @@ namespace AdventOfCodeCore.Solutions._2024
                     output.AddRange(Enumerable.Repeat('^', -(int)diff.Y));
                     output.AddRange(Enumerable.Repeat('<', -(int)diff.X));
                 }
-
-                output.Add('A');
-
-                return new string(output.ToArray());
             }
 
             // top right
@@ -270,10 +205,6 @@ namespace AdventOfCodeCore.Solutions._2024
                     output.AddRange(Enumerable.Repeat('>', (int)diff.X));
                     output.AddRange(Enumerable.Repeat('^', -(int)diff.Y));
                 }
-
-                output.Add('A');
-
-                return new string(output.ToArray());
             }
 
             // bottom left
@@ -287,10 +218,6 @@ namespace AdventOfCodeCore.Solutions._2024
                     output.AddRange(Enumerable.Repeat('v', (int)diff.Y));
                     output.AddRange(Enumerable.Repeat('<', -(int)diff.X));
                 }
-
-                output.Add('A');
-
-                return new string(output.ToArray());
             }
 
             // bottom right
@@ -304,14 +231,48 @@ namespace AdventOfCodeCore.Solutions._2024
                     output.AddRange(Enumerable.Repeat('>', (int)diff.X));
                     output.AddRange(Enumerable.Repeat('v', (int)diff.Y));
                 }
-
-                output.Add('A');
-
-                return new string(output.ToArray());
             }
+
+            output.Add('A');
+            seen.Add((start, dest), new string(output.ToArray()));
+
+            return new string(output.ToArray());
 
             throw new Exception("invalid direction");
         }
+
+
+        private long StepsToPushRecurse(Point start, Point end, int depth, Dictionary<(Point, Point, int), long> seen, Dictionary<(Point, Point), string> seenStrings)
+        {
+            if (seen.ContainsKey((start, end, depth)))
+                return seen[(start, end, depth)];
+
+            var stage = StepsToPushV2(start, end, seenStrings);
+            if(depth == 24)
+            {
+                seen.Add((start, end, depth), stage.Length);
+
+                return stage.Length;
+            }
+
+            var output = 0L;
+            var currentPos = 'A';
+
+            foreach (var item in stage)
+            {
+                var testPos = new Point(arrowGrid[item].X, arrowGrid[currentPos].Y);
+
+                var target = arrowGrid[item] - arrowGrid[currentPos];
+                output += StepsToPushRecurse(arrowGrid[currentPos], arrowGrid[item], depth + 1, seen, seenStrings);
+                currentPos = item;
+            }
+
+            seen.Add((start, end, depth), output);
+
+            return output;
+        }
+
+
 
         private List<Point> ToPointList(Point start, List<char> path)
         {
