@@ -105,14 +105,14 @@ namespace AdventOfCodeCore.Core
             if (matchingList.Length > 1)
             {
                 Console.WriteLine("Enter which version you want to run (blank works for default)");
-                Console.WriteLine($"({string.Join("/", solutions.Select(it => it.Name ?? "default"))})");
+                Console.WriteLine($"({string.Join("/", matchingList.Select(it => it.Name ?? "default"))})");
                 var input = Console.ReadLine()?.ToLower();
 
-                if ((string.IsNullOrEmpty(input) || input == "default") && solutions.Any(it => it.Name == null))
-                    return solutions.First(it => it.Name == null);
+                if ((string.IsNullOrEmpty(input) || input == "default") && matchingList.Any(it => it.Name == null))
+                    return matchingList.First(it => it.Name == null);
                 else
                 {
-                    var matching = solutions.First(it => it.Name?.ToLower()?.Contains(input ?? string.Empty) == true);
+                    var matching = matchingList.First(it => it.Name?.ToLower()?.Contains(input ?? string.Empty) == true);
 
                     if (matching != null)
                         return matching;

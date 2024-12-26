@@ -36,5 +36,20 @@ namespace AdventOfCodeCore.Solutions._2024
                         .All(it3 => it3 <= 7)))
                 .Count(it => it);
         }
+
+        [Solution(25, 1, "Simple")]
+        public int SimpleSolution(string input)
+        {
+            var chunks = Parser.ToArrayOfGroups(input);
+
+            var locks = chunks.Where(it => it[0] == '#');
+            var keys = chunks.Where(it => it[0] == '.');
+
+            return locks
+                .SelectMany(it => keys
+                    .Select(it2 => it.Zip(it2, (a, b) => a == '#' && b == '#').Any(it3 => it3))
+                    .Where(it2 => !it2))
+                .Count();
+        }
     }
 }
