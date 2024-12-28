@@ -1,5 +1,6 @@
 ﻿using AdventOfCode.Common;
 using ImageMagick;
+using ImageMagick.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,7 +89,7 @@ namespace AdventOfCode.Renderer._2021
 
         private MagickImage Draw(HashSet<Point> east, HashSet<Point> south, Point limit)
         {
-            var output = new MagickImage(MagickColors.Black, (int)limit.X, (int)limit.Y);
+            var output = new MagickImage(MagickColors.Black, (uint)limit.X, (uint)limit.Y);
 
             for(var i = 0; i < limit.Y; i++)
             {

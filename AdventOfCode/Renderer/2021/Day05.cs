@@ -1,5 +1,6 @@
 ﻿using AdventOfCode.Common;
 using ImageMagick;
+using ImageMagick.Drawing;
 using System;
 using System.Linq;
 
@@ -19,7 +20,7 @@ namespace AdventOfCode.Renderer._2021
             var width = pointList.Max(it => it.X) - offsetX + 20;
             var height = pointList.Max(it => it.Y) - offsetY + 20;
 
-            var output = new MagickImage(MagickColors.Blue, (int)width, (int)height);
+            var output = new MagickImage(MagickColors.Blue, (uint)width, (uint)height);
 
             foreach(var line in pointPairs)
             {

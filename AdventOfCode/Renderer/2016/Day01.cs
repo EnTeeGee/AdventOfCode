@@ -1,5 +1,6 @@
 ﻿using AdventOfCode.Common;
 using ImageMagick;
+using ImageMagick.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,7 +45,9 @@ namespace AdventOfCode.Renderer._2016
             var lowerRight = new Point(visited.Max(it => it.X), visited.Max(it => it.Y));
             var buffer = 10;
 
-            var output = new MagickImage(MagickColors.Black, (int)((lowerRight.X - upperLeft.X) + (buffer * 2)), (int)((lowerRight.Y - upperLeft.Y) + (buffer * 2)));
+            
+
+            var output = new MagickImage(MagickColors.Black, (uint)((lowerRight.X - upperLeft.X) + (buffer * 2)), (uint)((lowerRight.Y - upperLeft.Y) + (buffer * 2)));
 
             foreach(var item in visited)
             {

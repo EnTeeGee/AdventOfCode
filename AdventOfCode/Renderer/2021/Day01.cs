@@ -1,5 +1,6 @@
 ﻿using AdventOfCode.Common;
 using ImageMagick;
+using ImageMagick.Drawing;
 using System.Linq;
 
 namespace AdventOfCode.Renderer._2021
@@ -14,7 +15,7 @@ namespace AdventOfCode.Renderer._2021
             var bottom = depths.Max() + 10;
             var width = depths.Length;
 
-            var output = new MagickImage(MagickColors.Brown, width, bottom);
+            var output = new MagickImage(MagickColors.Brown, (uint)width, (uint)bottom);
 
             for(var i = 0; i < depths.Length; i++)
             {
