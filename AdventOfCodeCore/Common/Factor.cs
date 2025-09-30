@@ -25,7 +25,7 @@
             return output.ToArray();
         }
 
-        public static long GCD(long first, long second)
+        public static long InternalGCD(long first, long second)
         {
             var max = Math.Max(first, second);
             var min = Math.Min(first, second);
@@ -33,12 +33,32 @@
             if (remainder == 0)
                 return min;
 
-            return GCD(min, remainder);
+            return InternalGCD(min, remainder);
         }
 
-        public static long LCM(int first, int second)
+        public static long GCD(params long[] values)
+        {
+            var currentGCD = Math.Abs(values[0]);
+            foreach (var item in values.Skip(1))
+                currentGCD = InternalGCD(currentGCD, Math.Abs(item));
+
+            return currentGCD;
+        }
+
+        private static long InternalLCM(long first, long second)
         {
             return (first * second) / GCD(first, second);
+        }
+
+        public static long LCM(params long[] values)
+        {
+            var currentLCM = 1L;
+            foreach(var item in values)
+            {
+                currentLCM = InternalLCM(currentLCM, item);
+            }
+
+            return currentLCM;
         }
     }
 }

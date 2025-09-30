@@ -101,5 +101,15 @@
         {
             return $"({X}, {Y}, {Z})";
         }
+
+        public static Voxel operator -(Voxel a, Voxel b)
+        {
+            return new Voxel(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
+        public static Voxel operator +(Voxel a, Voxel b)
+        {
+            return new Voxel(a.X + b.X, a.Y + b.Y, a.Z - b.Z);
+        }
     }
 }
