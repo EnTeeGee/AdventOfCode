@@ -1,13 +1,7 @@
 ﻿using AdventOfCodeCore.Common;
 using AdventOfCodeCore.Core;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
-using System.Xml;
+
 
 namespace AdventOfCodeCore.Solutions._2023
 {
