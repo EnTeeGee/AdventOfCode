@@ -15,44 +15,45 @@ namespace AdventOfCode2019.Common
 
         private long[] program;
         private bool needsInput;
-        private Queue<int> inputs;
-        private int? constInput;
+        private Queue<long> inputs;
+        private long? constInput;
         private List<long> outputs;
         private long relativeBase;
 
         public long Index { get; private set; }
         public bool HasHalted { get; private set; }
         public IEnumerable<long> Outputs => outputs;
+        public bool HasPendingInputs => inputs.Count > 0;
 
         public Intcode(string input)
         {
             program = Parser.SplitOn(input, ',').Select(it => long.Parse(it)).ToArray();
-            inputs = new Queue<int>();
+            inputs = new Queue<long>();
             outputs = new List<long>();
         }
 
         public Intcode(int[] input)
         {
             program = input.Select(it => (long)it).ToArray();
-            inputs = new Queue<int>();
+            inputs = new Queue<long>();
             outputs = new List<long>();
         }
 
-        public void AddInput(int input)
+        public void AddInput(long input)
         {
             inputs.Enqueue(input);
             needsInput = false;
         }
 
-        public void SetConstInput(int? input)
+        public void SetConstInput(long? input)
         {
             constInput = input;
             needsInput = input == null && !inputs.Any();
         }
 
-        public void ClearOutput()
+        public void ClearOutput(int? num)
         {
-            outputs = new List<long>();
+            outputs = num == null ? new List<long>() : outputs.Skip(num.Value).ToList();
         }
 
         public void OverwriteAddress(int index, long value)
@@ -82,7 +83,7 @@ namespace AdventOfCode2019.Common
             return outputs.Last();
         }
 
-        private void RunStep()
+        public void RunStep()
         {
             if (HasHalted)
                 return;
@@ -154,7 +155,7 @@ namespace AdventOfCode2019.Common
                 return;
             }
 
-            var input = constInput == null ? inputs.Dequeue() : constInput.Value;
+            var input = inputs.Any() ? inputs.Dequeue() : constInput!.Value;
             needsInput = false;
             WriteToPos(input, 1, param1Mode);
             Index += 2;
