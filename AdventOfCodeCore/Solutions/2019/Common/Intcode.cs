@@ -51,7 +51,7 @@ namespace AdventOfCode2019.Common
             needsInput = input == null && !inputs.Any();
         }
 
-        public void ClearOutput(int? num)
+        public void ClearOutput(int? num = null)
         {
             outputs = num == null ? new List<long>() : outputs.Skip(num.Value).ToList();
         }
