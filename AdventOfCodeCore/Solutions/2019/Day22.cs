@@ -1,21 +1,11 @@
 ﻿using AdventOfCodeCore.Common;
 using AdventOfCodeCore.Core;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace AdventOfCodeCore.Solutions._2019
 {
     internal class Day22
     {
-        const int shortLength = 10007;
-
         [Solution(22, 1)]
         public string Solution1(string input)
         {
