@@ -1,11 +1,7 @@
 ﻿using AdventOfCode2019.Common;
 using AdventOfCodeCore.Common;
 using AdventOfCodeCore.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2019.Solutions
 {
@@ -44,7 +40,6 @@ namespace AdventOfCode2019.Solutions
 
         private enum Direction { North, East, South, West }
 
-        // not 46
         [Solution(17, 2)]
         public long Problem2(string input)
         {
