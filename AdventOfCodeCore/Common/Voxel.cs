@@ -111,5 +111,15 @@
         {
             return new Voxel(a.X + b.X, a.Y + b.Y, a.Z - b.Z);
         }
+
+        public static implicit operator Voxel((int x, int y, int z) input)
+        {
+            return new Voxel(input.x, input.y, input.z);
+        }
+
+        public static implicit operator Voxel((long x, long y, int z) input)
+        {
+            return new Voxel(input.x, input.y, input.z);
+        }
     }
 }

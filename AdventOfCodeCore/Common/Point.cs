@@ -128,5 +128,15 @@ namespace AdventOfCodeCore.Common
         {
             return new Point(a.X + b.X, a.Y + b.Y);
         }
+
+        public static implicit operator Point((int x, int y) input)
+        {
+            return new Point(input.x, input.y);
+        }
+
+        public static implicit operator Point((long x, long y) input)
+        {
+            return new Point(input.x, input.y);
+        }
     }
 }
