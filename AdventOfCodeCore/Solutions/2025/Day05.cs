@@ -5,7 +5,7 @@ namespace AdventOfCodeCore.Solutions._2025
 {
     internal class Day05
     {
-        [Solution(6, 1)]
+        [Solution(5, 1)]
         public long Solution1(string input)
         {
             var chunks = Parser.ToArrayOfGroups(input);
@@ -14,7 +14,7 @@ namespace AdventOfCodeCore.Solutions._2025
             return Parser.ToArrayOf(chunks[1], it => long.Parse(it)).Count(it => ranges.Any(it2 => it2.Contains(it)));
         }
 
-        [Solution(6, 2)]
+        [Solution(5, 2)]
         public long Solution2(string input)
         {
             var chunks = Parser.ToArrayOfGroups(input);
